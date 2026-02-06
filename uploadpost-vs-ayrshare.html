@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Competitive Analysis: Upload-Post vs. Ayrshare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --ink-900: #151515;
+      --ink-800: #1f1f1f;
+      --ink-700: #2b2b2b;
+      --ink-600: #3b3b3b;
+      --ink-500: #5a5a5a;
+      --paper: #f6f3ee;
+      --sand: #efe9df;
+      --brand-blue: #1f6feb;
+      --brand-orange: #f28b32;
+      --accent-mint: #b8f3d8;
+      --accent-rose: #ffd3c2;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--ink-900);
+      background: radial-gradient(1200px 600px at 15% 0%, #fff7ef 0%, transparent 60%),
+        radial-gradient(1000px 500px at 90% 10%, #eaf4ff 0%, transparent 60%),
+        var(--paper);
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, .display-font {
+      font-family: 'Fraunces', serif;
+      letter-spacing: -0.02em;
+    }
+
+    .glass {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    .card {
+      border: 1px solid rgba(21, 21, 21, 0.08);
+      box-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.35);
+    }
+
+    .chip {
+      border: 1px solid rgba(21, 21, 21, 0.15);
+      background: #fff;
+    }
+
+    .grid-dots {
+      background-image: radial-gradient(rgba(21, 21, 21, 0.08) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 320px;
+    }
+
+    @media (min-width: 1024px) {
+      .chart-container {
+        height: 360px;
+      }
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #ede7dd; }
+    ::-webkit-scrollbar-thumb { background: #c8bfb5; border-radius: 999px; }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 999px;
+      background: var(--brand-blue);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+      margin-top: -7px;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 999px;
+      background: #d9d2c7;
+    }
+
+    .fade-enter {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .fade-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hover-lift {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 45px -28px rgba(0,0,0,0.35);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 640px;
+    }
+    th, td {
+      border-bottom: 1px solid rgba(21, 21, 21, 0.08);
+      padding: 14px 16px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-500);
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <header class="sticky top-0 z-50 glass border-b border-black/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-black text-white flex items-center justify-center font-semibold">LEO</div>
+        <div>
+          <div class="text-sm uppercase tracking-[0.2em] text-black/50">Competitive Review</div>
+          <div class="text-lg font-semibold">Upload-Post vs. Ayrshare</div>
+        </div>
+      </div>
+      <nav class="hidden md:flex gap-6 text-sm font-medium text-black/70">
+        <a href="#overview" class="hover:text-black">Overview</a>
+        <a href="#pricing" class="hover:text-black">Pricing</a>
+        <a href="#capabilities" class="hover:text-black">Capabilities</a>
+        <a href="#verdict" class="hover:text-black">Verdict</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    <section id="overview" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="space-y-6">
+        <span class="chip inline-flex items-center px-4 py-1 rounded-full text-xs font-semibold">Internal Brief · February 2026</span>
+        <h1 class="text-4xl lg:text-5xl font-semibold leading-tight">API Infrastructure vs. Operator Dashboard</h1>
+        <p class="text-lg text-black/70">
+          A concise, executive-ready comparison of <strong>Ayrshare</strong> and <strong>Upload-Post</strong>. Ayrshare is built for developers scaling product workflows. Upload-Post favors marketers who need a ready-to-use workspace.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="scrollToSection('pricing')" class="px-6 py-3 rounded-full bg-black text-white font-medium hover:opacity-90">Run the Pricing Simulator</button>
+          <button onclick="scrollToSection('verdict')" class="px-6 py-3 rounded-full border border-black/20 font-medium">Jump to Verdict</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-2xl card bg-white hover-lift">
+            <div class="text-xs uppercase tracking-[0.18em] text-black/40">Time to Value</div>
+            <div class="text-2xl font-semibold mt-2">Upload-Post wins</div>
+            <p class="text-sm text-black/60 mt-2">Launch within hours with a visual UI and lightweight setup.</p>
+          </div>
+          <div class="p-4 rounded-2xl card bg-white hover-lift">
+            <div class="text-xs uppercase tracking-[0.18em] text-black/40">Scale & Control</div>
+            <div class="text-2xl font-semibold mt-2">Ayrshare wins</div>
+            <p class="text-sm text-black/60 mt-2">Deep API coverage, higher throughput, and white labeling.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="p-6 rounded-3xl card bg-white grid-dots">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs uppercase tracking-[0.18em] text-black/40">At-a-glance score</div>
+              <h2 class="text-2xl font-semibold mt-2">Decision Snapshot</h2>
+            </div>
+            <div class="text-xs text-black/50">Score out of 100</div>
+          </div>
+          <div class="mt-6 space-y-4">
+            <div>
+              <div class="flex justify-between text-sm font-medium">
+                <span>Ayrshare</span>
+                <span>87</span>
+              </div>
+              <div class="h-2 rounded-full bg-black/10 mt-2">
+                <div class="h-2 rounded-full bg-[color:var(--brand-blue)]" style="width:87%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm font-medium">
+                <span>Upload-Post</span>
+                <span>78</span>
+              </div>
+              <div class="h-2 rounded-full bg-black/10 mt-2">
+                <div class="h-2 rounded-full bg-[color:var(--brand-orange)]" style="width:78%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl card bg-white hover-lift">
+            <div class="text-xs uppercase tracking-[0.18em] text-black/40">Ideal For</div>
+            <h3 class="text-lg font-semibold mt-2">Ayrshare</h3>
+            <p class="text-sm text-black/60 mt-2">Product teams, enterprise agencies, embedded publishing inside SaaS.</p>
+          </div>
+          <div class="p-5 rounded-2xl card bg-white hover-lift">
+            <div class="text-xs uppercase tracking-[0.18em] text-black/40">Ideal For</div>
+            <h3 class="text-lg font-semibold mt-2">Upload-Post</h3>
+            <p class="text-sm text-black/60 mt-2">Marketing teams, freelancers, and small agencies that need speed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="p-6 rounded-3xl card bg-white">
+        <h2 class="text-2xl font-semibold">Structured Comparison</h2>
+        <p class="text-sm text-black/60 mt-2">A condensed summary of the most important decision factors.</p>
+      </div>
+      <div class="lg:col-span-2 p-6 rounded-3xl card bg-white">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Ayrshare</th>
+                <th>Upload-Post</th>
+                <th>Why It Matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Onboarding</td>
+                <td>API + SDK setup</td>
+                <td>Ready dashboard</td>
+                <td>Speed to launch for non-technical teams.</td>
+              </tr>
+              <tr>
+                <td>White Labeling</td>
+                <td>Native support</td>
+                <td>Limited</td>
+                <td>Critical for SaaS platforms or client portals.</td>
+              </tr>
+              <tr>
+                <td>Automation</td>
+                <td>Workflow integrations</td>
+                <td>Webhooks</td>
+                <td>Enables large-scale scheduling and rule-based posting.</td>
+              </tr>
+              <tr>
+                <td>Media Limits</td>
+                <td>Large video uploads</td>
+                <td>Smaller caps</td>
+                <td>Higher limits reduce friction for content teams.</td>
+              </tr>
+              <tr>
+                <td>Pricing Curve</td>
+                <td>Bulk tiers</td>
+                <td>Linear per profile</td>
+                <td>Volume economics impact long-term budgets.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" class="p-8 rounded-3xl card bg-white">
+      <div class="max-w-3xl">
+        <h2 class="text-3xl font-semibold">Pricing Architecture Simulator</h2>
+        <p class="text-black/60 mt-3">
+          Ayrshare favors scale with tiered pricing. Upload-Post stays affordable early, but grows linearly as profiles increase.
+        </p>
+      </div>
+
+      <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-[color:var(--sand)]">
+          <div class="text-xs uppercase tracking-[0.18em] text-black/50">Profiles to manage</div>
+          <div class="mt-4 flex items-center justify-between text-sm font-medium">
+            <span>1</span>
+            <span id="profileCountDisplay" class="text-xl">10 Profiles</span>
+            <span>100</span>
+          </div>
+          <input type="range" id="profileSlider" min="1" max="100" value="10" step="1" class="mt-4" />
+          <div class="mt-6 space-y-4">
+            <div class="p-4 rounded-xl bg-white card">
+              <div class="text-xs uppercase tracking-[0.18em] text-black/40">Upload-Post Est.</div>
+              <div class="text-2xl font-semibold text-[color:var(--brand-orange)]" id="upCostDisplay">$0</div>
+              <div class="text-xs text-black/50 mt-1">$5–$10 per additional profile.</div>
+            </div>
+            <div class="p-4 rounded-xl bg-white card">
+              <div class="text-xs uppercase tracking-[0.18em] text-black/40">Ayrshare Est.</div>
+              <div class="text-2xl font-semibold text-[color:var(--brand-blue)]" id="ayrCostDisplay">$0</div>
+              <div class="text-xs text-black/50 mt-1">Tiered pricing improves at scale.</div>
+            </div>
+          </div>
+        </div>
+        <div class="lg:col-span-2 p-4 rounded-2xl bg-[#fbfaf8] border border-black/5">
+          <div class="chart-container">
+            <canvas id="pricingChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="capabilities" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="p-8 rounded-3xl card bg-white">
+        <h2 class="text-3xl font-semibold">Capabilities Profile</h2>
+        <p class="text-sm text-black/60 mt-2">
+          The radar chart highlights each product's emphasis across five core dimensions.
+        </p>
+        <div class="chart-container mt-6">
+          <canvas id="radarChart"></canvas>
+        </div>
+        <div class="flex gap-6 mt-4 text-sm">
+          <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[color:var(--brand-blue)]"></span> Ayrshare</div>
+          <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[color:var(--brand-orange)]"></span> Upload-Post</div>
+        </div>
+      </div>
+
+      <div class="p-8 rounded-3xl card bg-white flex flex-col">
+        <h2 class="text-3xl font-semibold">Hard Limits & Constraints</h2>
+        <p class="text-sm text-black/60 mt-2">Numbers that drive technical feasibility.</p>
+        <div class="flex gap-2 mt-5 bg-black/5 p-1 rounded-full w-fit">
+          <button class="px-4 py-2 rounded-full text-sm font-medium transition active-tab bg-white shadow-sm" onclick="updateLimitsChart('video')">Video Size (MB)</button>
+          <button class="px-4 py-2 rounded-full text-sm font-medium transition text-black/50 hover:text-black" onclick="updateLimitsChart('api')">API Limits</button>
+        </div>
+        <div class="flex-grow flex items-center justify-center mt-6">
+          <div class="chart-container" style="height: 260px;">
+            <canvas id="limitsChart"></canvas>
+          </div>
+        </div>
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-black/60 bg-[color:var(--sand)] p-4 rounded-2xl">
+          <div>
+            <div class="text-xs uppercase tracking-[0.18em] text-black/40 mb-2">Developer Experience</div>
+            <div>SDKs: Node, Python, PHP, Go for Ayrshare.</div>
+            <div>Upload-Post offers REST API only.</div>
+          </div>
+          <div>
+            <div class="text-xs uppercase tracking-[0.18em] text-black/40 mb-2">Automation</div>
+            <div>Ayrshare ships with workflow integrations.</div>
+            <div>Upload-Post relies on webhooks + Zapier.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="p-6 rounded-3xl card bg-white">
+        <h2 class="text-2xl font-semibold">Key Advantages</h2>
+        <p class="text-sm text-black/60 mt-2">What each tool does best, in one screen.</p>
+      </div>
+      <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-6 rounded-2xl bg-[#eef6ff] border border-black/5 hover-lift">
+          <h3 class="text-xl font-semibold">Ayrshare Strengths</h3>
+          <ul class="mt-3 space-y-2 text-sm text-black/70">
+            <li>Enterprise-ready API throughput.</li>
+            <li>White-label posting workflows.</li>
+            <li>Better long-term unit economics.</li>
+          </ul>
+        </div>
+        <div class="p-6 rounded-2xl bg-[#fff3ea] border border-black/5 hover-lift">
+          <h3 class="text-xl font-semibold">Upload-Post Strengths</h3>
+          <ul class="mt-3 space-y-2 text-sm text-black/70">
+            <li>Instant dashboard usability.</li>
+            <li>Lower cost to start.</li>
+            <li>Simple scheduling for small teams.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="verdict" class="rounded-3xl p-10 bg-black text-white">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl font-semibold">The Verdict Engine</h2>
+          <p class="text-white/70 mt-2">Answer two quick questions to get the recommendation.</p>
+        </div>
+        <div id="wizard-container" class="bg-white/10 rounded-3xl p-8 min-h-[320px] flex flex-col items-center justify-center text-center">
+          <div id="step-1" class="w-full max-w-lg fade-enter-active">
+            <h3 class="text-xl font-semibold mb-8">What is your primary role?</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button onclick="goToStep(2, 'dev')" class="p-6 rounded-2xl border border-white/20 hover:border-white/60 transition">
+                <div class="text-lg font-semibold">Developer / Product Owner</div>
+                <div class="text-xs text-white/60 mt-2">Building a SaaS or embedded workflow.</div>
+              </button>
+              <button onclick="goToStep(3, 'marketer')" class="p-6 rounded-2xl border border-white/20 hover:border-white/60 transition">
+                <div class="text-lg font-semibold">Marketer / Agency</div>
+                <div class="text-xs text-white/60 mt-2">Managing content for brands.</div>
+              </button>
+            </div>
+          </div>
+
+          <div id="step-2" class="hidden w-full max-w-lg">
+            <h3 class="text-xl font-semibold mb-8">Do you need to white-label the posting experience?</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button onclick="showResult('ayrshare')" class="p-6 rounded-2xl border border-white/20 hover:border-white/60 transition">
+                <div class="text-lg font-semibold">Yes</div>
+                <div class="text-xs text-white/60 mt-2">My users post inside our product.</div>
+              </button>
+              <button onclick="showResult('mixed')" class="p-6 rounded-2xl border border-white/20 hover:border-white/60 transition">
+                <div class="text-lg font-semibold">No / Not sure</div>
+                <div class="text-xs text-white/60 mt-2">We just need backend automation.</div>
+              </button>
+            </div>
+            <button onclick="resetWizard()" class="mt-8 text-sm text-white/60 hover:text-white underline">Start Over</button>
+          </div>
+
+          <div id="step-3" class="hidden w-full max-w-lg">
+            <h3 class="text-xl font-semibold mb-8">How many distinct client brands do you manage?</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button onclick="showResult('uploadpost')" class="p-6 rounded-2xl border border-white/20 hover:border-white/60 transition">
+                <div class="text-lg font-semibold">1–5 Brands</div>
+                <div class="text-xs text-white/60 mt-2">Small team, lower volume.</div>
+              </button>
+              <button onclick="showResult('ayrshare')" class="p-6 rounded-2xl border border-white/20 hover:border-white/60 transition">
+                <div class="text-lg font-semibold">20+ Brands</div>
+                <div class="text-xs text-white/60 mt-2">Large agency operations.</div>
+              </button>
+            </div>
+            <button onclick="resetWizard()" class="mt-8 text-sm text-white/60 hover:text-white underline">Start Over</button>
+          </div>
+
+          <div id="result-ayrshare" class="hidden w-full max-w-lg">
+            <div class="w-14 h-14 bg-[color:var(--brand-blue)] rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">A</div>
+            <h3 class="text-2xl font-semibold mb-2">Recommendation: Ayrshare</h3>
+            <p class="text-white/70 mb-6">
+              Choose Ayrshare if you need embedded workflows, white-labeling, and pricing that improves with scale.
+            </p>
+            <button onclick="resetWizard()" class="block w-full mt-6 text-sm text-white/60 hover:text-white underline">Start Over</button>
+          </div>
+
+          <div id="result-uploadpost" class="hidden w-full max-w-lg">
+            <div class="w-14 h-14 bg-[color:var(--brand-orange)] rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">U</div>
+            <h3 class="text-2xl font-semibold mb-2">Recommendation: Upload-Post</h3>
+            <p class="text-white/70 mb-6">
+              Choose Upload-Post for fast adoption, lightweight training, and immediate dashboard value.
+            </p>
+            <button onclick="resetWizard()" class="block w-full mt-6 text-sm text-white/60 hover:text-white underline">Start Over</button>
+          </div>
+
+          <div id="result-mixed" class="hidden w-full max-w-lg">
+            <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">?</div>
+            <h3 class="text-2xl font-semibold mb-2">It's a Toss Up</h3>
+            <p class="text-white/70 mb-6">
+              If you have engineering capacity, Ayrshare will scale further. If you need to launch quickly without engineering time, Upload-Post is safer.
+            </p>
+            <button onclick="resetWizard()" class="block w-full mt-6 text-sm text-white/60 hover:text-white underline">Start Over</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-10 border-t border-black/10 text-center text-sm text-black/60">
+    <div class="max-w-7xl mx-auto px-4">
+      <p>Prepared for Alen's internal review. Data based on public pricing pages and documentation.</p>
+    </div>
+  </footer>
+
+  <script>
+    const pricingData = {
+      uploadPost: { base: 29, perProfile: 9, included: 3 },
+      ayrshare: { tiers: [{limit: 10, price: 49}, {limit: 20, price: 99}, {limit: 50, price: 199}, {limit: 100, price: 299}, {limit: 1000, price: 499}] }
+    };
+
+    const capabilitiesData = {
+      labels: ['API Depth', 'UI/UX Out-of-Box', 'Automation (n8n/Make)', 'White Label', 'Cost at Scale'],
+      ayrshare: [95, 40, 90, 100, 85],
+      uploadPost: [30, 90, 40, 20, 50]
+    };
+
+    const limitsData = {
+      video: { label: 'Max Video File Size (MB)', ayrshare: 1000, uploadPost: 200 },
+      api: { label: 'API Rate Limits (Calls/min)', ayrshare: 600, uploadPost: 60 }
+    };
+
+    const pricingCtx = document.getElementById('pricingChart').getContext('2d');
+    const pricingChart = new Chart(pricingCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Upload-Post', 'Ayrshare'],
+        datasets: [{
+          label: 'Monthly Cost ($)',
+          data: [0, 0],
+          backgroundColor: ['#f28b32', '#1f6feb'],
+          borderRadius: 10,
+          barPercentage: 0.6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#e1dbd1' } },
+          x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
+        }
+      }
+    });
+
+    const radarCtx = document.getElementById('radarChart').getContext('2d');
+    new Chart(radarCtx, {
+      type: 'radar',
+      data: {
+        labels: capabilitiesData.labels,
+        datasets: [
+          {
+            label: 'Ayrshare',
+            data: capabilitiesData.ayrshare,
+            borderColor: '#1f6feb',
+            backgroundColor: 'rgba(31, 111, 235, 0.18)',
+            pointBackgroundColor: '#1f6feb',
+            borderWidth: 2
+          },
+          {
+            label: 'Upload-Post',
+            data: capabilitiesData.uploadPost,
+            borderColor: '#f28b32',
+            backgroundColor: 'rgba(242, 139, 50, 0.18)',
+            pointBackgroundColor: '#f28b32',
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            angleLines: { color: '#e1dbd1' },
+            grid: { color: '#e1dbd1' },
+            pointLabels: { font: { size: 11 }, color: '#4a443d' },
+            ticks: { display: false }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    const limitsCtx = document.getElementById('limitsChart').getContext('2d');
+    let limitsChartInstance = new Chart(limitsCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Upload-Post', 'Ayrshare'],
+        datasets: [{
+          label: limitsData.video.label,
+          data: [limitsData.video.uploadPost, limitsData.video.ayrshare],
+          backgroundColor: ['#ffd3c2', '#b8d7ff'],
+          borderColor: ['#f28b32', '#1f6feb'],
+          borderWidth: 1,
+          borderRadius: 6,
+          indexAxis: 'y'
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: '#e1dbd1' }, beginAtZero: true },
+          y: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
+        }
+      }
+    });
+
+    const slider = document.getElementById('profileSlider');
+    const countDisplay = document.getElementById('profileCountDisplay');
+    const upDisplay = document.getElementById('upCostDisplay');
+    const ayrDisplay = document.getElementById('ayrCostDisplay');
+
+    function calculateCost(count) {
+      let upCost = pricingData.uploadPost.base;
+      if (count > pricingData.uploadPost.included) {
+        upCost += (count - pricingData.uploadPost.included) * pricingData.uploadPost.perProfile;
+      }
+      const tier = pricingData.ayrshare.tiers.find(t => t.limit >= count);
+      const ayrCost = tier ? tier.price : pricingData.ayrshare.tiers[pricingData.ayrshare.tiers.length - 1].price;
+      return { upCost, ayrCost };
+    }
+
+    function updatePricing() {
+      const count = parseInt(slider.value, 10);
+      countDisplay.innerText = `${count} Profiles`;
+      const costs = calculateCost(count);
+      upDisplay.innerText = `$${costs.upCost}`;
+      ayrDisplay.innerText = `$${costs.ayrCost}`;
+      pricingChart.data.datasets[0].data = [costs.upCost, costs.ayrCost];
+      pricingChart.update();
+    }
+
+    slider.addEventListener('input', updatePricing);
+    updatePricing();
+
+    function updateLimitsChart(type) {
+      const data = limitsData[type];
+      limitsChartInstance.data.datasets[0].label = data.label;
+      limitsChartInstance.data.datasets[0].data = [
+        type === 'video' ? limitsData.video.uploadPost : limitsData.api.uploadPost,
+        type === 'video' ? limitsData.video.ayrshare : limitsData.api.ayrshare
+      ];
+      limitsChartInstance.update();
+
+      const buttons = document.querySelectorAll('#capabilities button');
+      buttons.forEach(btn => {
+        if (btn.innerText.includes('Video') && type === 'video') {
+          btn.classList.add('bg-white', 'shadow-sm', 'text-black');
+          btn.classList.remove('text-black/50');
+        } else if (btn.innerText.includes('API') && type === 'api') {
+          btn.classList.add('bg-white', 'shadow-sm', 'text-black');
+          btn.classList.remove('text-black/50');
+        } else {
+          btn.classList.remove('bg-white', 'shadow-sm', 'text-black');
+          btn.classList.add('text-black/50');
+        }
+      });
+    }
+
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function goToStep(stepNum) {
+      document.querySelectorAll('#wizard-container > div').forEach(el => el.classList.add('hidden'));
+      const nextStep = document.getElementById(`step-${stepNum}`);
+      nextStep.classList.remove('hidden');
+      nextStep.classList.add('fade-enter-active');
+    }
+
+    function showResult(result) {
+      document.querySelectorAll('#wizard-container > div').forEach(el => el.classList.add('hidden'));
+      const resultEl = document.getElementById(`result-${result}`);
+      resultEl.classList.remove('hidden');
+      resultEl.classList.add('fade-enter-active');
+    }
+
+    function resetWizard() {
+      document.querySelectorAll('#wizard-container > div').forEach(el => el.classList.add('hidden'));
+      document.getElementById('step-1').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
