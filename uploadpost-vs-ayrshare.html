@@ -201,6 +201,7 @@
         <a href="#overview" class="hover:text-black">Overview</a>
         <a href="#pricing" class="hover:text-black">Pricing</a>
         <a href="#limits" class="hover:text-black">Platform Caps</a>
+        <a href="#policy" class="hover:text-black">Developer Policy</a>
         <a href="#capabilities" class="hover:text-black">Capabilities</a>
         <a href="#verdict" class="hover:text-black">Verdict</a>
       </nav>
@@ -505,6 +506,123 @@
               <td>Daily Cap / Char</td>
               <td>25 rec. / 1,024</td>
               <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="policy" class="p-8 rounded-3xl card bg-white">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-3xl font-semibold">Developer Policy Deep Dive</h2>
+          <p class="text-sm text-black/60 mt-2">Rate limits, compliance rules, and AI usage guardrails across major platforms.</p>
+        </div>
+        <div class="text-xs uppercase tracking-[0.18em] text-black/40">Policy &amp; Retention</div>
+      </div>
+
+      <div class="table-scroll mt-6 rounded-2xl border border-black/10 bg-[#fbfaf8]">
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Primary Rate Limits</th>
+              <th>Key Guidelines &amp; Prohibitions</th>
+              <th>Data Retention &amp; Purge Rules</th>
+              <th>AI Training Policy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Reddit</td>
+              <td>100 QPM per OAuth client; 10 RPM unauthenticated.</td>
+              <td>Must use unique, descriptive User-Agent; no registration of multiple accounts for one use case.</td>
+              <td>Mandatory 48-hour purge for any user content or account info deleted from the site.</td>
+              <td>Prohibited for AI training/scraping without express written approval.</td>
+            </tr>
+            <tr>
+              <td>LinkedIn</td>
+              <td>80–1,000 profile views/day; 100 connection requests/week; 150 msgs/day.</td>
+              <td>Prohibits "headless" or fake accounts; Compliance APIs required for messaging access.</td>
+              <td>Member social activity data storage limited to 48 hours; most profile data to 24 hours.</td>
+              <td>Opt-out by default; user data used for generative AI improvement unless manually disabled.</td>
+            </tr>
+            <tr>
+              <td>X (Twitter)</td>
+              <td>Basic: 15k reads/mo; Pro: 1M reads/mo. Free: 500 posts/mo.</td>
+              <td>Prohibits replicating core features; no competitor analysis; must use official embedding code.</td>
+              <td>Data storage restricted to 30 days without enterprise-level permissions.</td>
+              <td>Licensing model; consumption-based "pay-per-use" billing launched in beta (late 2025).</td>
+            </tr>
+            <tr>
+              <td>TikTok</td>
+              <td>600 RPM (Server API v2); 50 QPS (Shop API).</td>
+              <td>Posting cap of ~15/day; no promotional watermarks or logos on content.</td>
+              <td>Research data refresh required every 15 days; portability downloads expire in 4 days.</td>
+              <td>Strictly prohibited for machine learning or AI development without specific approval.</td>
+            </tr>
+            <tr>
+              <td>Instagram</td>
+              <td>50 posts/day; 100 stories/day; 200 DMs/day (approx.).</td>
+              <td>No scraping or collecting PII; prohibited from storing message content beyond policy limits.</td>
+              <td>Data storage limited to 24 hours for many endpoints; content access governed by user tokens.</td>
+              <td>No training or building AI models using Instagram content without consent.</td>
+            </tr>
+            <tr>
+              <td>Facebook</td>
+              <td>200 calls/hour/user; 25 posts/day; 4800 calls/hour/app.</td>
+              <td>Cannot store API data indefinitely; use tokens; no bulk data export or re-hosting.</td>
+              <td>Most data must be deleted within 24 hours if user removes permissions.</td>
+              <td>AI use requires explicit permission; no model training without authorization.</td>
+            </tr>
+            <tr>
+              <td>YouTube</td>
+              <td>Quota system: 10,000 units/day; upload costs 1600 units.</td>
+              <td>Must display attribution; no bypassing quotas; no storing user data without consent.</td>
+              <td>Must delete user data on request; retention subject to OAuth tokens.</td>
+              <td>Generative AI training requires explicit consent; data cannot be used for model training otherwise.</td>
+            </tr>
+            <tr>
+              <td>Google Business</td>
+              <td>300 requests/min/user; 10 QPS per project.</td>
+              <td>No caching beyond 30 days; must re-validate frequently; no resale of data.</td>
+              <td>Location data must be refreshed every 30 days or purged.</td>
+              <td>AI/ML use not allowed without explicit written permission.</td>
+            </tr>
+            <tr>
+              <td>Pinterest</td>
+              <td>1000 requests/hour/app; 10 requests/sec/user.</td>
+              <td>No commercial reuse of data; must show attribution; no scraping outside API.</td>
+              <td>Data must be refreshed every 7 days; deleted content removed within 48 hours.</td>
+              <td>AI model training forbidden without explicit prior written consent.</td>
+            </tr>
+            <tr>
+              <td>Snapchat</td>
+              <td>Limited throughput; rate limits vary by API (typically 20 QPS).</td>
+              <td>No data scraping; no automated friend adds; ad content must comply with brand safety rules.</td>
+              <td>Data retention limited to 30 days for most endpoints.</td>
+              <td>Use of Snap data for AI training prohibited without explicit approval.</td>
+            </tr>
+            <tr>
+              <td>Telegram</td>
+              <td>20 messages/minute per bot; 30 messages/sec overall.</td>
+              <td>No spam; content must follow platform restrictions; API abuse leads to immediate ban.</td>
+              <td>Data must be deleted on user request; most data stored on Telegram infrastructure.</td>
+              <td>No ML training on user content without consent.</td>
+            </tr>
+            <tr>
+              <td>Threads</td>
+              <td>Rate limits not fully published; enforced dynamically.</td>
+              <td>No scraping or automated engagement; must follow Meta policies.</td>
+              <td>Retention tied to Meta data policies; delete on user request.</td>
+              <td>AI training restricted under Meta platform terms.</td>
+            </tr>
+            <tr>
+              <td>Bluesky</td>
+              <td>Appview rate limits apply; typically 3,000 requests/5 min.</td>
+              <td>No automated spam; must include app identifier; follow moderation policies.</td>
+              <td>Data must be deleted when no longer needed; user removal requires purge.</td>
+              <td>Training on user content prohibited without explicit permission.</td>
             </tr>
           </tbody>
         </table>
