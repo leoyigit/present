@@ -111,6 +111,60 @@
       box-shadow: 0 22px 45px -28px rgba(0,0,0,0.35);
     }
 
+    .info-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-700);
+      background: #fdfbf8;
+      border: 1px solid rgba(21, 21, 21, 0.12);
+      position: relative;
+      cursor: help;
+    }
+    .info-pill .info-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--ink-900);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .info-tooltip {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 10px);
+      min-width: 260px;
+      max-width: 340px;
+      padding: 0.75rem 0.9rem;
+      border-radius: 14px;
+      background: var(--ink-900);
+      color: #f7f4ee;
+      font-size: 12px;
+      line-height: 1.4;
+      box-shadow: 0 18px 50px -28px rgba(0,0,0,0.6);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: opacity 150ms ease, transform 150ms ease, visibility 150ms ease;
+      z-index: 20;
+    }
+    .info-pill:hover .info-tooltip,
+    .info-pill:focus-within .info-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
     .table-scroll {
       overflow-x: auto;
     }
@@ -156,7 +210,7 @@
     <section id="overview" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div class="space-y-6">
         <span class="chip inline-flex items-center px-4 py-1 rounded-full text-xs font-semibold">Internal Brief · February 2026</span>
-        <h1 class="text-4xl lg:text-5xl font-semibold leading-tight">API Infrastructure vs. Operator Dashboard</h1>
+        <h1 class="text-4xl lg:text-5xl font-semibold leading-tight">Ayrshare vs. Upload-Post</h1>
         <p class="text-lg text-black/70">
           A concise, executive-ready comparison of <strong>Ayrshare</strong> and <strong>Upload-Post</strong>. Ayrshare is built for developers scaling product workflows. Upload-Post favors marketers who need a ready-to-use workspace.
         </p>
@@ -311,6 +365,202 @@
             <canvas id="pricingChart"></canvas>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section id="limits" class="p-8 rounded-3xl card bg-white">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-3xl font-semibold">Platform Caps &amp; Product Parity</h2>
+          <p class="text-sm text-black/60 mt-2">Daily caps and character limits across core networks.</p>
+        </div>
+        <div class="text-xs uppercase tracking-[0.18em] text-black/40">Daily Cap / Character Limits</div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mt-6">
+        <div class="info-pill" tabindex="0">
+          Hard Limit
+          <span class="info-dot">i</span>
+          <div class="info-tooltip">
+            <div class="font-semibold text-white mb-1">Definition</div>
+            A strict technical cap enforced by the social network API.
+            <div class="mt-2">
+              <span class="font-semibold text-white">What happens:</span> Exceeding it (e.g., Instagram 50) returns <span class="code-font">429 Too Many Requests</span> and can block posting for ~24 hours.
+            </div>
+            <div class="mt-2 text-white/70">
+              <span class="font-semibold text-white">Contrast:</span> Recommended limits (e.g., Facebook 25) may not hard-block, but going over can trigger spam signals or “shadowban” risk.
+            </div>
+          </div>
+        </div>
+        <div class="info-pill" tabindex="0">
+          Free Limit
+          <span class="info-dot">i</span>
+          <div class="info-tooltip">
+            <div class="font-semibold text-white mb-1">Context (X/Twitter)</div>
+            Free API tiers allow very low volume (often ~50 posts/month) before requiring a paid “Pro” subscription.
+            <div class="mt-2 text-white/70">
+              <span class="font-semibold text-white">Context (Platform Trial):</span> Upload-Post offers a free trial (no card). Ayrshare typically needs a paid plan for full multi-platform features.
+            </div>
+          </div>
+        </div>
+        <div class="info-pill" tabindex="0">
+          Premium Limit
+          <span class="info-dot">i</span>
+          <div class="info-tooltip">
+            <div class="font-semibold text-white mb-1">Increased character counts</div>
+            On X, paid “Premium” can post up to 25,000 characters vs 280.
+            <div class="mt-2 text-white/70">
+              <span class="font-semibold text-white">Volume caps:</span> Upload-Post Premium tiers unlock higher/“unlimited” posting until the networks’ hard limits apply.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-scroll mt-6 rounded-2xl border border-black/10 bg-[#fbfaf8]">
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Feature</th>
+              <th>Ayrshare (13)</th>
+              <th>Upload-Post (10)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Facebook</td>
+              <td>Daily Cap / Char</td>
+              <td>25 / 63,206</td>
+              <td>25 / 63,206</td>
+            </tr>
+            <tr>
+              <td>Instagram</td>
+              <td>Daily Cap / Char</td>
+              <td>50 (Hard) / 2,200</td>
+              <td>50 (Hard) / 2,200</td>
+            </tr>
+            <tr>
+              <td>X (Twitter)</td>
+              <td>Daily Cap / Char</td>
+              <td>50 (Free) / 280 (up to 25k)</td>
+              <td>400 (Premium) / 25,000</td>
+            </tr>
+            <tr>
+              <td>LinkedIn</td>
+              <td>Daily Cap / Char</td>
+              <td>150 / 3,000</td>
+              <td>150 / 3,000</td>
+            </tr>
+            <tr>
+              <td>TikTok</td>
+              <td>Daily Cap / Char</td>
+              <td>15 / 2,200</td>
+              <td>15 / 2,200</td>
+            </tr>
+            <tr>
+              <td>YouTube</td>
+              <td>Daily Cap / Char</td>
+              <td>10 / 5,000</td>
+              <td>15 / 5,000</td>
+            </tr>
+            <tr>
+              <td>Threads</td>
+              <td>Daily Cap / Char</td>
+              <td>50 / 500</td>
+              <td>50 / 500</td>
+            </tr>
+            <tr>
+              <td>Pinterest</td>
+              <td>Daily Cap / Char</td>
+              <td>20 / 500</td>
+              <td>20 / 500</td>
+            </tr>
+            <tr>
+              <td>Google Business</td>
+              <td>Daily Cap / Char</td>
+              <td>15 / 1,500</td>
+              <td>15 / 1,500</td>
+            </tr>
+            <tr>
+              <td>Bluesky</td>
+              <td>Daily Cap / Char</td>
+              <td>50 / 300</td>
+              <td>50 / 300</td>
+            </tr>
+            <tr>
+              <td>Reddit</td>
+              <td>Daily Cap / Char</td>
+              <td>40 / 5,000</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Telegram</td>
+              <td>Daily Cap / Char</td>
+              <td>25 / 4,096</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Snapchat</td>
+              <td>Daily Cap / Char</td>
+              <td>30 / 500 (Spotlight: 160)</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="p-8 rounded-3xl card bg-white">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-3xl font-semibold">Integrations &amp; Ops</h2>
+          <p class="text-sm text-black/60 mt-2">Operational differences that affect rollout speed.</p>
+        </div>
+        <div class="text-xs uppercase tracking-[0.18em] text-black/40">Ayrshare vs Upload-Post</div>
+      </div>
+
+      <div class="table-scroll mt-6 rounded-2xl border border-black/10 bg-[#fbfaf8]">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Ayrshare</th>
+              <th>Upload-Post</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Integrations</td>
+              <td>Complex manual API config / SDKs (Node, Python)</td>
+              <td>Ready-to-use Make.com &amp; n8n modules</td>
+            </tr>
+            <tr>
+              <td>White Label</td>
+              <td>High-end ($499+/mo)</td>
+              <td>Affordable ($50+/mo)</td>
+            </tr>
+            <tr>
+              <td>Media Hosting</td>
+              <td>Requires your own public URLs</td>
+              <td>Provides signed S3 upload URLs</td>
+            </tr>
+            <tr>
+              <td>Verification</td>
+              <td>Auto-rejects bad formats/hashtags</td>
+              <td>Simple token-based sending</td>
+            </tr>
+            <tr>
+              <td>Analytics</td>
+              <td>Unified engagement/reach data</td>
+              <td>Basic link and post tracking</td>
+            </tr>
+            <tr>
+              <td>Webhooks</td>
+              <td>Real-time post status updates</td>
+              <td>Integrated via automation modules</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
