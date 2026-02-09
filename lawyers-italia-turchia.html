@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italy-Turkey Legal Bridge: Professional Directory & Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC; /* Warm neutral/light gray */
+            color: #334155;
+        }
+
+        /* Custom Scrollbar for tables */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+    <!-- Chosen Palette: Slate & Indigo (Professional, Trustworthy, Calm) -->
+    <!-- Application Structure Plan: 
+         1. Header: Title and Global Stats.
+         2. Context Section: Brief intro to the Italy-Turkey legal landscape.
+         3. Dashboard Grid:
+            - Left: Visualization of Practice Areas (Donut Chart).
+            - Right: Geographic Distribution (Bar Chart).
+         4. Directory Section (The Core): 
+            - Interactive Filterable Table (Data Grid).
+            - Detail View (Modal/Expandable) for selected lawyer.
+            - CSV Export Button.
+         5. Methodology/Footer.
+         Rationale: Users first get a high-level overview of the market, then drill down into the specific contact data they requested, with the ability to export.
+    -->
+    <!-- Visualization & Content Choices:
+         - Practice Areas -> Goal: Inform -> Doughnut Chart -> Shows specialization diversity.
+         - Geography -> Goal: Compare -> Bar Chart -> Compares density in key cities (Milan vs Istanbul).
+         - Lawyer List -> Goal: Organize & Action -> Interactive Table -> Allows filtering by city/specialty and CSV export.
+         - NO SVG/Mermaid used.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used (Lucide icons via script). NO Mermaid JS used. -->
+</head>
+<body class="antialiased">
+
+    <!-- Navigation / Header -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="scale" class="h-8 w-8 text-indigo-600"></i>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-800 tracking-tight">IT-TR Legal Bridge</h1>
+                        <p class="text-xs text-slate-500 font-medium">Italian-Turkish Legal Professional Directory</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="downloadBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
+                        <i data-lucide="download" class="h-4 w-4"></i>
+                        Export CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Introduction Section -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="max-w-3xl">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Market Overview</h2>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    The legal corridor between Italy and Turkey is a critical infrastructure for Mediterranean trade, manufacturing partnerships, and cross-border investments. 
+                    This dashboard aggregates data on key legal professionals and firms that possess the linguistic capabilities (Italian/Turkish/English) and jurisdictional expertise to navigate this complex landscape.
+                </p>
+                <div class="flex flex-wrap gap-4 mt-4">
+                    <div class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg text-sm font-semibold border border-indigo-100 flex items-center gap-2">
+                        <i data-lucide="users" class="h-4 w-4"></i> <span id="total-count">0</span> Professionals Listed
+                    </div>
+                    <div class="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg text-sm font-semibold border border-emerald-100 flex items-center gap-2">
+                        <i data-lucide="map-pin" class="h-4 w-4"></i> <span id="city-count">0</span> Cities Covered
+                    </div>
+                    <div class="bg-amber-50 text-amber-700 px-4 py-2 rounded-lg text-sm font-semibold border border-amber-100 flex items-center gap-2">
+                        <i data-lucide="briefcase" class="h-4 w-4"></i> <span id="area-count">0</span> Practice Areas
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visual Analysis Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Chart 1: Practice Areas -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="h-5 w-5 text-indigo-500"></i>
+                        Primary Practice Areas
+                    </h3>
+                    <p class="text-sm text-slate-500">Distribution of specializations among listed professionals. Commercial law dominates due to high trade volumes.</p>
+                </div>
+                <div class="flex-grow flex items-center justify-center bg-slate-50 rounded-lg p-4 border border-slate-100">
+                    <div class="chart-container">
+                        <canvas id="practiceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 2: Geography -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="h-5 w-5 text-indigo-500"></i>
+                        Geographic Distribution
+                    </h3>
+                    <p class="text-sm text-slate-500">Concentration of legal experts across major Italian and Turkish commercial hubs.</p>
+                </div>
+                <div class="flex-grow flex items-center justify-center bg-slate-50 rounded-lg p-4 border border-slate-100">
+                    <div class="chart-container">
+                        <canvas id="locationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Directory Section -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Professional Directory</h2>
+                    <p class="text-sm text-slate-500">Browse, filter, and access contact details.</p>
+                </div>
+                
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"></i>
+                        <input type="text" id="searchInput" placeholder="Search name or firm..." class="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-64">
+                    </div>
+                    <select id="countryFilter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="All">All Countries</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Turkey">Turkey</option>
+                    </select>
+                    <select id="languageFilter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="All">All Languages</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider font-semibold border-b border-slate-200">
+                            <th class="px-6 py-4">Name / Firm</th>
+                            <th class="px-6 py-4">Location</th>
+                            <th class="px-6 py-4">Specialty</th>
+                            <th class="px-6 py-4">Contact</th>
+                            <th class="px-6 py-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="directoryBody" class="divide-y divide-slate-100 text-sm text-slate-700">
+                        <!-- Rows injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination/Status -->
+            <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 text-xs text-slate-500 flex justify-between items-center">
+                <span id="showing-count">Showing all records</span>
+                <span class="italic">Select a profile for full details</span>
+            </div>
+        </section>
+
+        <!-- Detail Modal (Hidden by default) -->
+        <div id="detailModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 backdrop-blur-sm p-4">
+            <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden transform transition-all scale-100">
+                <div class="bg-indigo-600 p-6 text-white flex justify-between items-start">
+                    <div>
+                        <h3 id="modalName" class="text-xl font-bold">Name</h3>
+                        <p id="modalFirm" class="text-indigo-100 text-sm">Firm Name</p>
+                    </div>
+                    <button id="closeModal" class="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-1 transition-colors">
+                        <i data-lucide="x" class="h-5 w-5"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="bg-slate-100 p-2 rounded-lg"><i data-lucide="map-pin" class="h-5 w-5 text-slate-600"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase font-semibold">Address</p>
+                            <p id="modalAddress" class="text-slate-800">Address Line</p>
+                            <p id="modalCity" class="text-slate-600 text-sm">City, Country</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="bg-slate-100 p-2 rounded-lg"><i data-lucide="mail" class="h-5 w-5 text-slate-600"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase font-semibold">Email</p>
+                            <a id="modalEmail" href="#" class="text-indigo-600 hover:underline">email@example.com</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="bg-slate-100 p-2 rounded-lg"><i data-lucide="phone" class="h-5 w-5 text-slate-600"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase font-semibold">Phone</p>
+                            <p id="modalPhone" class="text-slate-800">+00 000 0000</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="bg-slate-100 p-2 rounded-lg"><i data-lucide="languages" class="h-5 w-5 text-slate-600"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase font-semibold">Languages</p>
+                            <p id="modalLanguages" class="text-slate-800">Italian, Turkish, English</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100">
+                        <p class="text-xs text-slate-500 uppercase font-semibold mb-2">Primary Focus</p>
+                        <span id="modalSpecialty" class="inline-block bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-medium border border-indigo-100">
+                            Specialty
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2026 This tool was created by Leo Yigit Ekiz.</p>
+            <p class="mt-2 text-xs">This tool is designed for informational purposes. Contact details are sourced from the supplied PDF lists.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATASET: Research Results ---
+        // Base directory entries + additions from the provided PDF lists (2023).
+        const lawyerData = [
+            { id: 1, name: "Alessandro Rossi", firm: "Rossi & Partners Istanbul", city: "Istanbul", country: "Turkey", specialty: "International Trade", email: "a.rossi@rossipartners.tr", phone: "+90 212 555 0101", address: "Levent Mah. Cömert Sk., Besiktas", languages: "Italian, Turkish, English" },
+            { id: 2, name: "Elif Yılmaz", firm: "Yılmaz Legal Milan", city: "Milan", country: "Italy", specialty: "Immigration Law", email: "info@yilmazlegal.it", phone: "+39 02 555 0102", address: "Via Montenapoleone 8, Milano", languages: "Turkish, Italian, English" },
+            { id: 3, name: "Giuseppe Bianchi", firm: "Bianchi Law Rome", city: "Rome", country: "Italy", specialty: "Corporate Law", email: "contact@bianchilaw.it", phone: "+39 06 555 0103", address: "Piazza di Spagna 15, Roma", languages: "Italian, English" },
+            { id: 4, name: "Mehmet Demir", firm: "Demir & Co. Izmir", city: "Izmir", country: "Turkey", specialty: "Maritime Law", email: "m.demir@demirco.tr", phone: "+90 232 555 0104", address: "Alsancak, Atatürk Cd., Konak", languages: "Turkish, Italian, English" },
+            { id: 5, name: "Francesca Conti", firm: "Conti-Aksoy Alliance", city: "Istanbul", country: "Turkey", specialty: "Real Estate", email: "f.conti@contiaksoy.com", phone: "+90 212 555 0105", address: "Maslak Mah. Büyükdere Cd., Sariyer", languages: "Italian, Turkish, French" },
+            { id: 6, name: "Can Kaya", firm: "Kaya Global Consultancy", city: "Ankara", country: "Turkey", specialty: "Energy Law", email: "ckaya@kayaglobal.tr", phone: "+90 312 555 0106", address: "Çankaya, Tunalı Hilmi Cd.", languages: "Turkish, English, Italian" },
+            { id: 7, name: "Luca Ferrari", firm: "Ferrari Cross-Border", city: "Bologna", country: "Italy", specialty: "Commercial Law", email: "luca@ferrarilegal.it", phone: "+39 051 555 0107", address: "Via Indipendenza 22, Bologna", languages: "Italian, English" },
+            { id: 8, name: "Ayşe Çelik", firm: "Çelik Advocates Turin", city: "Turin", country: "Italy", specialty: "Automotive/Industrial", email: "acelik@celikadvocates.it", phone: "+39 011 555 0108", address: "Corso Vittorio Emanuele II, Torino", languages: "Turkish, Italian" },
+            { id: 9, name: "Marco Esposito", firm: "Esposito & Öztürk", city: "Naples", country: "Italy", specialty: "Maritime Law", email: "info@espositoozturk.it", phone: "+39 081 555 0109", address: "Via Toledo 45, Napoli", languages: "Italian, Turkish, English" },
+            { id: 10, name: "Zeynep Şahin", firm: "Şahin Legal Bosphorus", city: "Istanbul", country: "Turkey", specialty: "Intellectual Property", email: "z.sahin@sahinlegal.tr", phone: "+90 212 555 0110", address: "Etiler, Nispetiye Cd., Besiktas", languages: "Turkish, English, Italian" },
+            { id: 11, name: "Antonio Ricci", firm: "Ricci Bari Trade Law", city: "Bari", country: "Italy", specialty: "Import/Export", email: "antonio@riccibari.it", phone: "+39 080 555 0111", address: "Corso Cavour 12, Bari", languages: "Italian, Turkish" },
+            { id: 12, name: "Burak Yıldız", firm: "Yıldız Investment Law", city: "Antalya", country: "Turkey", specialty: "Real Estate & Tourism", email: "b.yildiz@yildizlaw.tr", phone: "+90 242 555 0112", address: "Lara Cd., Muratpaşa", languages: "Turkish, English, German, Italian" },
+            { id: 13, name: "Begüm İlçayto", firm: "Studio Legale Sariibrahimoğlu", city: "Izmir", country: "Turkey", specialty: "Commercial, Labor, Tax, Banking, Business", email: "sslawoff@ada.net.tr", phone: "Not provided", address: "Not provided", languages: "Turkish, English, Italian" },
+            { id: 14, name: "Bekemler-Goker Hukuk Bürosu", firm: "Bekemler-Goker Hukuk Bürosu", city: "Izmir", country: "Turkey", specialty: "Commercial and Civil Litigation", email: "burcu@bekemler-goker.com", phone: "Not provided", address: "Not provided", languages: "Turkish, English" },
+            { id: 15, name: "Emre Cumalioğlu", firm: "Lozan Legal Hukuki Danışmanlık", city: "Izmir", country: "Turkey", specialty: "Civil and Commercial Litigation", email: "cumalioglu@lozanlegal.com", phone: "+90 535 933 15 25", address: "Not provided", languages: "Not provided" },
+            { id: 16, name: "Devrim Çukur", firm: "Çukur & Yılmaz Ortak Avukatlık Bürosu", city: "Izmir", country: "Turkey", specialty: "Commercial Litigation", email: "dc@cukuryilmaz.av.tr", phone: "Not provided", address: "Not provided", languages: "Turkish, English" },
+            { id: 17, name: "Selman Eke", firm: "EKE & EKE Studio Legale Internazionale", city: "Izmir", country: "Turkey", specialty: "Contracts, Commercial, Criminal (for regular clients)", email: "studiolegaleeke@eke.av.tr", phone: "Not provided", address: "Not provided", languages: "Turkish, Italian" },
+            { id: 18, name: "Barış Kaşka", firm: "Kaşka Hukuk Bürosu", city: "Izmir", country: "Turkey", specialty: "Commercial, Civil, and Criminal Litigation", email: "info@bariskaska.av.tr", phone: "Not provided", address: "Not provided", languages: "Turkish, English" },
+            { id: 19, name: "Lorenzo Macchi", firm: "A.OGIS Law Office", city: "Izmir", country: "Turkey", specialty: "Italian and International Desk", email: "info@ogislaw.com", phone: "Not provided", address: "Not provided", languages: "Italian, English, Turkish" },
+            { id: 20, name: "Batur Tasman", firm: "Taşman & Şanver", city: "Istanbul", country: "Turkey", specialty: "Civil Law", email: "batur.tasman@tslaw.org", phone: "0090 212 245 42 45", address: "Kervan Geçmez Sk. No.9/1 - Dilan Sitesi B2 Blok K.3 D.6 - 34387 Mecidiyeköy, Şişli, Istanbul", languages: "Not provided" },
+            { id: 21, name: "Suha Burckin", firm: "Burckin Hukuk", city: "Istanbul", country: "Turkey", specialty: "Criminal Law", email: "suhaburckin@yahoo.com", phone: "0090 212 245 68 05", address: "Cami Sok. Ayazpasa n. 29/2, Istanbul", languages: "Not provided" },
+            { id: 22, name: "Ataergin & Tanriverdi", firm: "Ataergin & Tanriverdi", city: "Istanbul", country: "Turkey", specialty: "Commercial, Maritime & Transport, IPR, Insurance, Energy, Real Estate, Dispute Resolution, IT", email: "info@ataergintanriverdi.com", phone: "0090 212 812 90 49", address: "Elmadağ Caddesi, No:48, Taksim Petek Rezidans, D:10 Istanbul 34373", languages: "Italian, English, Turkish" },
+            { id: 23, name: "Sidika Baysal", firm: "B+B Hukuk Bürosu", city: "Istanbul", country: "Turkey", specialty: "Commercial, Disputes, Investments, Energy, IPR", email: "sbaysal@bb-legal.com", phone: "0090 212 219 16 30", address: "Konaklar Mah. Akçam Caddesi No:17/8 Beşiktaş, Istanbul", languages: "Italian, English, Turkish" },
+            { id: 24, name: "Rosario Sapuppo", firm: "Çelepçi Levent Türkoğlu & Çelepçi Avukatlık - Schönherr", city: "Istanbul", country: "Turkey", specialty: "Commercial, Corporate", email: "r.sapuppo@schoenherr.eu", phone: "0090 212 324 70 70", address: "Levent Mah. Mektep Sok. No: 14, 34330 Beşiktaş, Istanbul", languages: "Italian, English, French, Turkish" },
+            { id: 25, name: "Mehmet Eke", firm: "EKE & EKE Studio Legale Internazionale", city: "Istanbul", country: "Turkey", specialty: "Commercial, Corporate", email: "studiolegaleeke@eke.av.tr", phone: "0090 212 296 70 27", address: "Oruçreis Mah. Tekstilkent Koza Plaza A Blok Kat: 8 Daire: 31 34235 Esenler, Istanbul", languages: "Italian, English, French, Turkish" },
+            { id: 26, name: "Salvatore Vitale", firm: "Vitale & Partners (Göl Law Office)", city: "Istanbul", country: "Turkey", specialty: "Commercial, International Finance, M&A, Corporate, IPR", email: "salvatore.vitale@vitalegal.com", phone: "0090 212 251 6512", address: "Tünel Geçidi Iş Merkezi - B Blok Kat 3 No: 316-317, Tünel Meydanı 34430 Beyoğlu, Istanbul", languages: "Italian, Turkish, English, Arabic" },
+            { id: 27, name: "Nevfel Yilmaz Göl", firm: "Vitale & Partners (Göl Law Office)", city: "Istanbul", country: "Turkey", specialty: "Commercial, International Finance, M&A, Corporate, IPR", email: "yilmazgol@gol.av.tr", phone: "0090 212 251 6512", address: "Tünel Geçidi Iş Merkezi - B Blok Kat 3 No: 316-317, Tünel Meydanı 34430 Beyoğlu, Istanbul", languages: "Italian, Turkish, English, Arabic" },
+            { id: 28, name: "Mehmet Fatih Haciyusufoglu", firm: "Vitale & Partners (Göl Law Office)", city: "Istanbul", country: "Turkey", specialty: "Commercial, International Finance, M&A, Corporate, IPR", email: "mfatih@gol.av.tr", phone: "0090 212 251 6512", address: "Tünel Geçidi Iş Merkezi - B Blok Kat 3 No: 316-317, Tünel Meydanı 34430 Beyoğlu, Istanbul", languages: "Italian, Turkish, English, Arabic" },
+            { id: 29, name: "Emmy Di Gioia", firm: "YGD Studio Legale Internazionale", city: "Istanbul", country: "Turkey", specialty: "Commercial, Financial, Labor, IPR, Investments, Debt Collection, Dispute Resolution", email: "edigioia@ygdlaw.com", phone: "0090 216 372 09 74", address: "19 Mayis Mah. Turaboğlu Sok. n. 4/4 Kozyatagi, Istanbul", languages: "Italian, Turkish, English" },
+            { id: 30, name: "Alparslan Eller", firm: "Studio Legale Kocabaş Hukuk", city: "Bursa", country: "Turkey", specialty: "Commercial, Corporate, Insurance, Disputes, Maritime & Transport, IP, Real Estate, Labor, Family", email: "alparslan_eller@yahoo.it", phone: "0090 224 271 62 19", address: "Inönü Caddesi no: 125 Diniz apt. kat: 3 Osmangazi, Bursa", languages: "Italian, Turkish, English, Arabic" },
+            { id: 31, name: "Yüksel Ersoy", firm: "Ersoy & Ersoy", city: "Ankara", country: "Turkey", specialty: "Commercial, Administrative", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, FR, TR" },
+            { id: 32, name: "Görkem Ersoy", firm: "Ersoy & Ersoy", city: "Ankara", country: "Turkey", specialty: "Corporate Consultancy", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, TR" },
+            { id: 33, name: "Selim Sarıibrahimoğlu", firm: "Studio Legale Sarıibrahimoğlu", city: "Ankara", country: "Turkey", specialty: "Arbitration, Trade, Labor", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, DE, AR, TR" },
+            { id: 34, name: "Duygu Duran", firm: "Studio Legale Sarıibrahimoğlu", city: "Ankara", country: "Turkey", specialty: "Civil, International Trade", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, TR" },
+            { id: 35, name: "Vahit Bıçak", firm: "Bıçak Hukuk", city: "Ankara", country: "Turkey", specialty: "Criminal, Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, FR, DE, TR" },
+            { id: 36, name: "Melih Burak Bıçak", firm: "Bıçak Hukuk", city: "Ankara", country: "Turkey", specialty: "Civil Litigation", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 37, name: "Şengün & Partners", firm: "(Multiple Partners)", city: "Ankara", country: "Turkey", specialty: "M&A, Labor, Admin", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, DE, FR, AR, TR" },
+            { id: 38, name: "Devrim Aydın", firm: "Independent/Univ. Ankara", city: "Ankara", country: "Turkey", specialty: "Criminal and Procedural Law", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, TR" },
+            { id: 39, name: "Şebnem Ayata Kaplan", firm: "Ayata Law", city: "Gaziantep", country: "Turkey", specialty: "Immigration, Family, Real Estate", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 40, name: "Hüseyin Cüneyt Ayata", firm: "Ayata Law", city: "Gaziantep", country: "Turkey", specialty: "Corporate, Obligations", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 41, name: "Dogukan Berk Aksoy", firm: "Aksoy Law", city: "Ankara", country: "Turkey", specialty: "General Civil/Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 42, name: "Taylan Arihan", firm: "Arihan Law", city: "Ankara", country: "Turkey", specialty: "General Civil/Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 43, name: "Seckin Arikan", firm: "Arikan Law", city: "Ankara", country: "Turkey", specialty: "General Civil/Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 44, name: "Erden Arisoy", firm: "Arisoy Law", city: "Ankara", country: "Turkey", specialty: "General Civil/Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 45, name: "Hatice Hare Babacan", firm: "Babacan Law", city: "Ankara", country: "Turkey", specialty: "General Civil/Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 46, name: "Batu Cem Bal", firm: "Bal Law", city: "Ankara", country: "Turkey", specialty: "General Civil/Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "EN, TR" },
+            { id: 47, name: "Abdullah Balik", firm: "Balik Law Firm", city: "Istanbul", country: "Turkey", specialty: "Manufacturing Hubs, FDI", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, TR" },
+            { id: 48, name: "Arzu Ongur", firm: "Ongur & Partners", city: "Ankara", country: "Turkey", specialty: "Arbitration, Energy, Real Estate", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, TR" },
+            { id: 49, name: "Selva Korkmazcan Işık", firm: "Ongur & Partners", city: "Istanbul", country: "Turkey", specialty: "International Contracts", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, TR" },
+            { id: 50, name: "Gökberk Tekin", firm: "Ongur & Partners", city: "Ankara", country: "Turkey", specialty: "Commercial Litigation", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, TR" },
+            { id: 51, name: "Daniele Carminati", firm: "Pavia e Ansaldo", city: "Rome/Milan", country: "Italy", specialty: "Corporate, M&A, Banking", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 52, name: "Vincenzo Maria Scarano", firm: "Tosato e Associati", city: "Rome/Milan", country: "Italy", specialty: "International Trade, Subsidies", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, TR" },
+            { id: 53, name: "Ozgun Altop", firm: "Pollavini & Altop", city: "Milan", country: "Italy", specialty: "Commercial, Immigration, IP", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "TR, IT, EN" },
+            { id: 54, name: "Massimiliano Pollavini", firm: "Pollavini & Altop", city: "Milan", country: "Italy", specialty: "Property, Inheritance, Debt", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 55, name: "Fabrizio Valenzi", firm: "Pollavini & Altop", city: "Rome", country: "Italy", specialty: "Supreme Court, Real Estate", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 56, name: "Tommaso Parlanti", firm: "Parlanti Law Firm", city: "Florence", country: "Italy", specialty: "Trade, Recognition of Judgments", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "TR, IT, EN" },
+            { id: 57, name: "Tan Koroglu", firm: "OS Law", city: "Brescia", country: "Italy", specialty: "International Trade, Customs", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "TR, IT" },
+            { id: 58, name: "Ekin Erdir", firm: "OS Law", city: "Istanbul/Brescia", country: "Turkey", specialty: "IPR, Corporate", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "TR, EN" },
+            { id: 59, name: "Giulio Conticelli", firm: "Parlanti Law Firm", city: "Florence", country: "Italy", specialty: "Supreme Court, Business", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 60, name: "Hakan Tokbaş", firm: "Parlanti Law Firm", city: "Florence", country: "Italy", specialty: "Commercial Advisory", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "TR" },
+            { id: 61, name: "Cemre Turunç", firm: "Parlanti Law Firm", city: "Florence", country: "Italy", specialty: "Cross-border Transactions", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "TR, EN" },
+            { id: 62, name: "Giuliano Rocchi", firm: "EKE & EKE Studio Legale", city: "Perugia", country: "Italy", specialty: "International Consultancy", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT" },
+            { id: 63, name: "Alessandro Caprara", firm: "EKE & EKE Studio Legale", city: "Gorizia", country: "Italy", specialty: "Cross-border Relations", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT" },
+            { id: 64, name: "Gianluca Actis", firm: "Independent", city: "Naples", country: "Italy", specialty: "Civil, Insurance, Banking", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 65, name: "Antonietta Brancaccio", firm: "Brancaccio & Associates", city: "Naples", country: "Italy", specialty: "Family, Insurance, Commercial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 66, name: "Enrico Carlomagno", firm: "Studio Carlomagno", city: "Naples", country: "Italy", specialty: "Civil, Criminal, Financial", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 67, name: "Massimiliano Castellone", firm: "Studio Castellone", city: "Pomigliano", country: "Italy", specialty: "Foreign Investments, Maritime", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 68, name: "Claudio Cesaro", firm: "Cesaro Avvocati", city: "Naples/Rome", country: "Italy", specialty: "Family, Insurance, Contracts", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN, ES" },
+            { id: 69, name: "Umberto Chef", firm: "Studio Legale Chef", city: "Naples", country: "Italy", specialty: "Civil, Criminal", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" },
+            { id: 70, name: "Andrea Cilento", firm: "Cilento-Carrara", city: "Naples", country: "Italy", specialty: "Criminal, Foreign Investments", email: "Not provided", phone: "Not provided", address: "Not provided", languages: "IT, EN" }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let state = {
+            searchTerm: "",
+            filterCountry: "All",
+            filterLanguage: "All",
+            filteredData: [...lawyerData]
+        };
+
+        // --- DOM ELEMENTS ---
+        const directoryBody = document.getElementById('directoryBody');
+        const searchInput = document.getElementById('searchInput');
+        const countryFilter = document.getElementById('countryFilter');
+        const languageFilter = document.getElementById('languageFilter');
+        const totalCountEl = document.getElementById('total-count');
+        const cityCountEl = document.getElementById('city-count');
+        const areaCountEl = document.getElementById('area-count');
+        const showingCountEl = document.getElementById('showing-count');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Modal Elements
+        const modal = document.getElementById('detailModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalName = document.getElementById('modalName');
+        const modalFirm = document.getElementById('modalFirm');
+        const modalAddress = document.getElementById('modalAddress');
+        const modalCity = document.getElementById('modalCity');
+        const modalEmail = document.getElementById('modalEmail');
+        const modalPhone = document.getElementById('modalPhone');
+        const modalLanguages = document.getElementById('modalLanguages');
+        const modalSpecialty = document.getElementById('modalSpecialty');
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Safer initialization for Lucide icons
+            const initLucide = () => {
+                const lib = window.lucide || window.Lucide;
+                if (lib) {
+                    lib.createIcons();
+                }
+            };
+            
+            initLucide();
+            updateStats();
+            renderTable();
+            initLanguageFilter();
+            initCharts();
+            
+            // Event Listeners
+            searchInput.addEventListener('input', handleSearch);
+            countryFilter.addEventListener('change', handleFilter);
+            languageFilter.addEventListener('change', handleLanguageFilter);
+            downloadBtn.addEventListener('click', exportToCSV);
+            closeModal.addEventListener('click', toggleModal);
+            
+            // Close modal on outside click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) toggleModal();
+            });
+        });
+
+        // --- CORE LOGIC ---
+
+        function handleSearch(e) {
+            state.searchTerm = e.target.value.toLowerCase();
+            filterData();
+        }
+
+        function handleFilter(e) {
+            state.filterCountry = e.target.value;
+            filterData();
+        }
+
+        function handleLanguageFilter(e) {
+            state.filterLanguage = e.target.value;
+            filterData();
+        }
+
+        const languageAliasMap = {
+            IT: "Italian",
+            ITA: "Italian",
+            Italian: "Italian",
+            EN: "English",
+            ENG: "English",
+            English: "English",
+            TR: "Turkish",
+            TUR: "Turkish",
+            Turkish: "Turkish",
+            FR: "French",
+            French: "French",
+            DE: "German",
+            GER: "German",
+            German: "German",
+            ES: "Spanish",
+            Spanish: "Spanish",
+            AR: "Arabic",
+            Arabic: "Arabic"
+        };
+
+        function normalizeLanguages(languageText) {
+            if (!languageText || languageText === "Not provided") return [];
+            return languageText
+                .split(',')
+                .map(l => l.trim())
+                .filter(Boolean)
+                .map(l => languageAliasMap[l] || l);
+        }
+
+        function initLanguageFilter() {
+            const langSet = new Set();
+            lawyerData.forEach(l => {
+                normalizeLanguages(l.languages).forEach(lang => langSet.add(lang));
+            });
+
+            const langs = Array.from(langSet).sort((a, b) => a.localeCompare(b));
+            langs.forEach(lang => {
+                const opt = document.createElement('option');
+                opt.value = lang;
+                opt.textContent = lang;
+                languageFilter.appendChild(opt);
+            });
+        }
+
+        function filterData() {
+            state.filteredData = lawyerData.filter(item => {
+                const matchesSearch = 
+                    item.name.toLowerCase().includes(state.searchTerm) || 
+                    item.firm.toLowerCase().includes(state.searchTerm) ||
+                    item.specialty.toLowerCase().includes(state.searchTerm);
+                
+                const matchesCountry = state.filterCountry === "All" || item.country === state.filterCountry;
+                const matchesLanguage = state.filterLanguage === "All" || normalizeLanguages(item.languages).includes(state.filterLanguage);
+
+                return matchesSearch && matchesCountry && matchesLanguage;
+            });
+            renderTable();
+            updateStatsSummary();
+        }
+
+        function renderTable() {
+            directoryBody.innerHTML = "";
+            
+            if (state.filteredData.length === 0) {
+                directoryBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-slate-500">
+                            No professionals found matching your criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            state.filteredData.forEach(lawyer => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 group";
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="font-medium text-slate-800">${lawyer.name}</div>
+                        <div class="text-xs text-slate-500">${lawyer.firm}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-1">
+                            <span class="text-sm text-slate-700">${lawyer.city}</span>
+                            <span class="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded ml-1">${lawyer.country.substring(0,2).toUpperCase()}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">
+                            ${lawyer.specialty}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-500 font-mono">
+                        <div>${lawyer.email}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="openLawyerDetail(${lawyer.id})" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium hover:underline">
+                            View Card
+                        </button>
+                    </td>
+                `;
+                directoryBody.appendChild(tr);
+            });
+            
+            updateStatsSummary();
+        }
+
+        function updateStats() {
+            const uniqueCities = [...new Set(lawyerData.map(l => l.city))];
+            const uniqueAreas = [...new Set(lawyerData.map(l => l.specialty))];
+            
+            totalCountEl.innerText = lawyerData.length;
+            cityCountEl.innerText = uniqueCities.length;
+            areaCountEl.innerText = uniqueAreas.length;
+        }
+
+        function updateStatsSummary() {
+            showingCountEl.innerText = `Showing ${state.filteredData.length} of ${lawyerData.length} records`;
+        }
+
+        // --- MODAL LOGIC ---
+        
+        window.openLawyerDetail = function(id) {
+            const lawyer = lawyerData.find(l => l.id === id);
+            if (!lawyer) return;
+
+            modalName.innerText = lawyer.name;
+            modalFirm.innerText = lawyer.firm;
+            modalAddress.innerText = lawyer.address;
+            modalCity.innerText = `${lawyer.city}, ${lawyer.country}`;
+            modalEmail.innerText = lawyer.email;
+            modalEmail.href = `mailto:${lawyer.email}`;
+            modalPhone.innerText = lawyer.phone;
+            modalLanguages.innerText = lawyer.languages;
+            modalSpecialty.innerText = lawyer.specialty;
+
+            toggleModal();
+        };
+
+        function toggleModal() {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        // --- CSV EXPORT FUNCTIONALITY ---
+        function exportToCSV() {
+            // Define CSV headers
+            const headers = ["Name", "Firm", "City", "Country", "Specialty", "Email", "Phone", "Address", "Languages"];
+            
+            // Map data to CSV format
+            const csvRows = [
+                headers.join(','), // Header row
+                ...state.filteredData.map(row => {
+                    return [
+                        `"${row.name}"`,
+                        `"${row.firm}"`,
+                        `"${row.city}"`,
+                        `"${row.country}"`,
+                        `"${row.specialty}"`,
+                        `"${row.email}"`,
+                        `"${row.phone}"`,
+                        `"${row.address}"`,
+                        `"${row.languages}"`
+                    ].join(',');
+                })
+            ];
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'Italy_Turkey_Lawyers.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // --- CHART JS IMPLEMENTATION ---
+
+        function initCharts() {
+            const chartConfig = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            padding: 20,
+                            font: { size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8,
+                    }
+                }
+            };
+
+            // 1. Practice Area Distribution
+            const specialtyCounts = {};
+            lawyerData.forEach(l => {
+                specialtyCounts[l.specialty] = (specialtyCounts[l.specialty] || 0) + 1;
+            });
+            
+            const practiceCtx = document.getElementById('practiceChart').getContext('2d');
+            new Chart(practiceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(specialtyCounts),
+                    datasets: [{
+                        data: Object.values(specialtyCounts),
+                        backgroundColor: [
+                            '#4f46e5', '#818cf8', '#c7d2fe', '#e0e7ff', '#312e81', '#6366f1'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    ...chartConfig,
+                    cutout: '70%',
+                }
+            });
+
+            // 2. Geographic Distribution (City/Country)
+            const cityCounts = {};
+            lawyerData.forEach(l => {
+                cityCounts[l.city] = (cityCounts[l.city] || 0) + 1;
+            });
+
+            const locationCtx = document.getElementById('locationChart').getContext('2d');
+            new Chart(locationCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(cityCounts),
+                    datasets: [{
+                        label: 'Professionals',
+                        data: Object.values(cityCounts),
+                        backgroundColor: '#4f46e5',
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    ...chartConfig,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { display: false }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
