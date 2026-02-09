@@ -1,0 +1,3589 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlyRank | Enterprise Automation Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-dark: #070709;
+        --bg-card: #0e0e12;
+        --accent-blue: #3b82f6;
+        --accent-purple: #a855f7;
+        --text-main: #f8fafc;
+        --text-dim: #94a3b8;
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --success: #10b981;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: "Inter", sans-serif;
+        line-height: 1.6;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* NAVIGATION BAR */
+      .nav-bar {
+        background: linear-gradient(135deg, #0e0e12 0%, #1a1b26 100%);
+        border-bottom: 1px solid var(--glass-border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 70px;
+        flex-shrink: 0;
+      }
+
+      .nav-logo {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(
+          135deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-tabs {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .nav-tab {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        color: var(--text-dim);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .nav-tab:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.3);
+        color: var(--accent-blue);
+      }
+
+      .nav-tab.active {
+        background: rgba(59, 130, 246, 0.15);
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+      }
+
+      /* MAIN CONTAINER */
+      .main-container {
+        flex: 1;
+        overflow: hidden;
+        padding: 2rem;
+      }
+
+      /* PAGE SECTIONS */
+      .page-section {
+        display: none;
+        height: 100%;
+      }
+
+      .page-section.active {
+        display: block;
+      }
+
+      /* MAIN LAYOUT: Split Screen */
+      .app-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 50/50 Split */
+        gap: 2rem;
+        height: 100%;
+        max-width: 2200px;
+        margin: 0 auto;
+      }
+
+      /* LEFT COLUMN: Scrollable Engine Stack */
+      .main-content {
+        overflow-y: auto;
+        padding-right: 1rem;
+        padding-bottom: 2rem;
+      }
+
+      /* RIGHT COLUMN: Sticky Global Sidebar */
+      .global-sidebar {
+        background: #000;
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        height: calc(100vh - 4rem);
+      }
+
+      .sidebar-header {
+        background: #1a1b26;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .sidebar-header h2 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.2rem;
+        color: white;
+        margin-bottom: 0.2rem;
+      }
+
+      .sidebar-status {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        font-family: "Fira Code", monospace;
+      }
+
+      .sidebar-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        background: #0d0d0d;
+      }
+
+      /* Adjust Typography for Layout */
+      h1 {
+        font-family: "Outfit", sans-serif;
+        font-size: 2rem;
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+      }
+
+      .engine-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .engine-card {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: border 0.2s;
+        position: relative;
+      }
+
+      .engine-card:hover {
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 1rem;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .card-header h3 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.4rem;
+        color: white;
+      }
+
+      .mission-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: var(--accent-blue);
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+      }
+
+      /* 2-Column Grid inside Card (Controls | Terminal) */
+      .grid-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr; /* Artifacts now go to global sidebar */
+        gap: 2rem;
+        align-items: start;
+      }
+
+      .node-list {
+        list-style: none;
+      }
+      .node-list li {
+        margin-bottom: 0.8rem;
+        padding: 0.8rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .node-list li:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+      .node-name {
+        font-weight: 600;
+        color: white;
+        font-size: 0.9rem;
+      }
+      .node-desc {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
+
+      .panel-base {
+        background: #000;
+        border-radius: 12px;
+        border: 1px solid var(--glass-border);
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        background: #1a1b26;
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid var(--glass-border);
+        color: var(--text-dim);
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .panel-content {
+        padding: 1rem;
+        flex-grow: 1;
+        overflow-y: auto;
+        font-family: "Fira Code", monospace;
+        font-size: 0.8rem;
+        color: #a9b1d6;
+        white-space: pre-wrap;
+      }
+
+      /* Global Output Styling */
+      pre {
+        margin: 0 !important;
+        background: transparent !important;
+        text-shadow: none !important;
+        overflow-x: hidden !important;
+      }
+      code {
+        font-family: "Fira Code", monospace !important;
+        font-size: 0.85rem !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+      }
+
+      .status-running {
+        color: #fbbf24;
+      }
+      .status-success {
+        color: var(--success);
+      }
+
+      button.run-btn {
+        background: var(--accent-blue);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+        width: 100%;
+        transition: filter 0.2s;
+      }
+      button.run-btn:hover {
+        filter: brightness(1.2);
+      }
+
+      /* DOCUMENTATION PAGE STYLES */
+      .doc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+        padding-bottom: 2rem;
+      }
+
+      .doc-card {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .doc-card:hover {
+        border-color: var(--accent-blue);
+        transform: translateY(-2px);
+      }
+
+      .doc-card h3 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent-blue);
+      }
+
+      .doc-card .doc-meta {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        margin-bottom: 1rem;
+      }
+
+      .doc-card .doc-description {
+        color: var(--text-dim);
+        line-height: 1.7;
+        margin-bottom: 1rem;
+      }
+
+      .doc-card .doc-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .doc-tag {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: var(--accent-blue);
+      }
+
+      /* WORKFLOW PAGE STYLES */
+      .workflow-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 2rem;
+      }
+
+      .workflow-selector {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .workflow-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .workflow-btn:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+      }
+
+      .workflow-btn.active {
+        background: rgba(59, 130, 246, 0.15);
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+      }
+
+      .workflow-diagram {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        display: none;
+      }
+
+      .workflow-diagram.active {
+        display: block;
+      }
+
+      .workflow-diagram h2 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .workflow-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .workflow-step {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      .step-number {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+
+      .step-content {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+      }
+
+      .step-content h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent-blue);
+      }
+
+      .step-content p {
+        color: var(--text-dim);
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+      }
+
+      .step-output {
+        background: rgba(0, 0, 0, 0.3);
+        border-left: 3px solid var(--accent-purple);
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-family: "Fira Code", monospace;
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .step-output:hover {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent-blue);
+      }
+
+      .workflow-view-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+        min-height: 600px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1rem;
+      }
+
+      .workflow-schema {
+        background: #050507;
+        border-radius: 12px;
+        padding: 3rem;
+        position: relative;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+      }
+
+      /* FLOWCHART ELEMENTS */
+      .flow-node {
+        position: relative;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        background: #1e293b;
+        border: 2px solid var(--glass-border);
+        min-width: 220px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2;
+      }
+
+      .flow-node:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+      }
+
+      .flow-node.active {
+        border-color: var(--accent-purple);
+        box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+        background: #2e1065;
+      }
+
+      .flow-node.start {
+        background: #d97706; /* Amber */
+        color: #000;
+        border-radius: 50px;
+        font-weight: 800;
+        min-width: 120px;
+        border: none;
+      }
+
+      .flow-node.end {
+        background: var(--success);
+        color: #000;
+        border-radius: 50px;
+        font-weight: 800;
+        min-width: 140px;
+        border: none;
+      }
+
+      .flow-node.decision {
+        width: 140px;
+        height: 140px;
+        background: #991b1b;
+        border: 2px solid #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(45deg);
+        margin: 2rem 0;
+      }
+
+      .flow-node.decision .node-label {
+        transform: rotate(-45deg);
+        font-size: 0.8rem;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      .flow-line {
+        width: 2px;
+        height: 40px;
+        background: var(--accent-blue);
+        position: relative;
+      }
+
+      .flow-line::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: -4px;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 8px solid var(--accent-blue);
+      }
+
+      .node-step-tag {
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        background: var(--accent-blue);
+        color: white;
+        font-size: 0.6rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 800;
+      }
+
+      .workflow-engine-section {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .workflow-mission-select {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.95rem;
+        cursor: pointer;
+        outline: none;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .workflow-mission-select:hover {
+        border-color: var(--accent-blue);
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      .workflow-mission-select option {
+        background: #0a0b14;
+        color: white;
+      }
+
+      /* DOCUMENTATION MODAL */
+      .doc-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(10px);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .doc-modal.active {
+        display: flex;
+      }
+
+      .doc-modal-content {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        max-width: 900px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 3rem;
+        position: relative;
+      }
+
+      .doc-modal-close {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .doc-modal-close:hover {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+
+      .doc-modal-content h1 {
+        font-family: "Outfit", sans-serif;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .doc-modal-content h2 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: var(--accent-blue);
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 0.5rem;
+      }
+
+      .doc-modal-content h3 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.2rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--accent-purple);
+      }
+
+      .doc-modal-content p {
+        color: var(--text-dim);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+      }
+
+      .doc-modal-content ul,
+      .doc-modal-content ol {
+        color: var(--text-dim);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+      }
+
+      .doc-modal-content li {
+        margin-bottom: 0.5rem;
+      }
+
+      .doc-modal-content code {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-family: "Fira Code", monospace;
+        font-size: 0.9em;
+        color: var(--accent-blue);
+      }
+
+      .doc-modal-content pre {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        padding: 1rem;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+      }
+
+      .doc-modal-content pre code {
+        background: none;
+        padding: 0;
+        color: var(--text-dim);
+      }
+
+      .doc-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .doc-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent-blue);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVIGATION BAR -->
+    <nav class="nav-bar">
+      <div class="nav-logo">FlyRank</div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchPage('dashboard')">
+          Dashboard
+        </button>
+        <button class="nav-tab" onclick="switchPage('documentation')">
+          Documentation
+        </button>
+        <button class="nav-tab" onclick="switchPage('workflows')">
+          Workflows
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+      <!-- DASHBOARD PAGE -->
+      <div id="dashboard-page" class="page-section active">
+        <div class="app-layout">
+          <!-- LEFT COLUMN: MAIN CONTENT -->
+          <main class="main-content">
+            <h1>FlyRank Enterprise Automation</h1>
+
+            <div class="engine-stack">
+              <!-- ENGINE 1 -->
+              <div class="engine-card" id="engine-1">
+                <div class="card-header">
+                  <div class="header-left"><h3>1. Web Content Engine</h3></div>
+                  <select
+                    class="mission-select"
+                    onchange="updateMission(1, this.value)"
+                  >
+                    <option value="default">
+                      Standard: Semantic Authority
+                    </option>
+                    <option value="product_comparison">
+                      Mission: Comparison Generator
+                    </option>
+                    <option value="faq_factory">Mission: FAQ Factory</option>
+                    <option value="deep_research">
+                      Mission: Deep Research Writer
+                    </option>
+                    <option value="tech_blog">Mission: Tech Blog System</option>
+                  </select>
+                </div>
+                <div class="grid-layout">
+                  <div>
+                    <p
+                      id="desc-1"
+                      style="
+                        color: var(--text-dim);
+                        margin-bottom: 1rem;
+                        font-size: 0.9rem;
+                      "
+                    ></p>
+                    <ul class="node-list" id="nodes-1"></ul>
+                    <button class="run-btn" onclick="runFullSimulation(1)">
+                      ▶ Run Workflow
+                    </button>
+                  </div>
+                  <div class="panel-base">
+                    <div class="panel-header">
+                      <span>AGENTS LOG</span>
+                      <span id="status-1" class="status-success">IDLE</span>
+                    </div>
+                    <div class="panel-content" id="terminal-1">
+                      Select a mission...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ENGINE 2 -->
+              <div class="engine-card" id="engine-2">
+                <div class="card-header">
+                  <div class="header-left"><h3>2. SEO Monitor Engine</h3></div>
+                  <select
+                    class="mission-select"
+                    onchange="updateMission(2, this.value)"
+                  >
+                    <option value="default">Standard: Living Audit</option>
+                    <option value="rank_tracker">Mission: Rank Tracker</option>
+                    <option value="ai_visibility">
+                      Mission: AI Visibility
+                    </option>
+                    <option value="index_watchdog">
+                      Mission: Index Watchdog
+                    </option>
+                    <option value="gap_analyzer">Mission: Gap Analyzer</option>
+                  </select>
+                </div>
+                <div class="grid-layout">
+                  <div>
+                    <p
+                      id="desc-2"
+                      style="
+                        color: var(--text-dim);
+                        margin-bottom: 1rem;
+                        font-size: 0.9rem;
+                      "
+                    ></p>
+                    <ul class="node-list" id="nodes-2"></ul>
+                    <button class="run-btn" onclick="runFullSimulation(2)">
+                      ▶ Run Workflow
+                    </button>
+                  </div>
+                  <div class="panel-base">
+                    <div class="panel-header">
+                      <span>AGENTS LOG</span>
+                      <span id="status-2" class="status-success">IDLE</span>
+                    </div>
+                    <div class="panel-content" id="terminal-2">
+                      Select a mission...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ENGINE 3 -->
+              <div class="engine-card" id="engine-3">
+                <div class="card-header">
+                  <div class="header-left"><h3>3. UGC Factory</h3></div>
+                  <select
+                    class="mission-select"
+                    onchange="updateMission(3, this.value)"
+                  >
+                    <option value="default">Standard: Viral Pipeline</option>
+                    <option value="influencer_gen">
+                      Mission: Influencer Gen
+                    </option>
+                    <option value="lip_sync">
+                      Mission: Lip-Sync Testimonial
+                    </option>
+                    <option value="screen_ugc">Mission: SaaS Screen UGC</option>
+                    <option value="ad_factory">Mission: Ad Factory</option>
+                  </select>
+                </div>
+                <div class="grid-layout">
+                  <div>
+                    <p
+                      id="desc-3"
+                      style="
+                        color: var(--text-dim);
+                        margin-bottom: 1rem;
+                        font-size: 0.9rem;
+                      "
+                    ></p>
+                    <ul class="node-list" id="nodes-3"></ul>
+                    <button class="run-btn" onclick="runFullSimulation(3)">
+                      ▶ Run Workflow
+                    </button>
+                  </div>
+                  <div class="panel-base">
+                    <div class="panel-header">
+                      <span>AGENTS LOG</span>
+                      <span id="status-3" class="status-success">IDLE</span>
+                    </div>
+                    <div class="panel-content" id="terminal-3">
+                      Select a mission...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ENGINE 4 -->
+              <div class="engine-card" id="engine-4">
+                <div class="card-header">
+                  <div class="header-left"><h3>4. Reddit Insider</h3></div>
+                  <select
+                    class="mission-select"
+                    onchange="updateMission(4, this.value)"
+                  >
+                    <option value="default">Standard: Engagement</option>
+                    <option value="problem_solver">
+                      Mission: Problem Solver
+                    </option>
+                    <option value="trend_seeder">Mission: Trend Seeder</option>
+                    <option value="reputation">
+                      Mission: Reputation Monitor
+                    </option>
+                  </select>
+                </div>
+                <div class="grid-layout">
+                  <div>
+                    <p
+                      id="desc-4"
+                      style="
+                        color: var(--text-dim);
+                        margin-bottom: 1rem;
+                        font-size: 0.9rem;
+                      "
+                    ></p>
+                    <ul class="node-list" id="nodes-4"></ul>
+                    <button class="run-btn" onclick="runFullSimulation(4)">
+                      ▶ Run Workflow
+                    </button>
+                  </div>
+                  <div class="panel-base">
+                    <div class="panel-header">
+                      <span>AGENTS LOG</span>
+                      <span id="status-4" class="status-success">IDLE</span>
+                    </div>
+                    <div class="panel-content" id="terminal-4">
+                      Select a mission...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ENGINE 5 -->
+              <div class="engine-card" id="engine-5">
+                <div class="card-header">
+                  <div class="header-left"><h3>5. Pinterest Focus</h3></div>
+                  <select
+                    class="mission-select"
+                    onchange="updateMission(5, this.value)"
+                  >
+                    <option value="default">Standard: Visual Discovery</option>
+                    <option value="visual_repurposer">
+                      Mission: Repurposer
+                    </option>
+                    <option value="promo_overlay">
+                      Mission: Promo Overlay
+                    </option>
+                    <option value="trend_scraper">
+                      Mission: Trend Scraper
+                    </option>
+                  </select>
+                </div>
+                <div class="grid-layout">
+                  <div>
+                    <p
+                      id="desc-5"
+                      style="
+                        color: var(--text-dim);
+                        margin-bottom: 1rem;
+                        font-size: 0.9rem;
+                      "
+                    ></p>
+                    <ul class="node-list" id="nodes-5"></ul>
+                    <button class="run-btn" onclick="runFullSimulation(5)">
+                      ▶ Run Workflow
+                    </button>
+                  </div>
+                  <div class="panel-base">
+                    <div class="panel-header">
+                      <span>AGENTS LOG</span>
+                      <span id="status-5" class="status-success">IDLE</span>
+                    </div>
+                    <div class="panel-content" id="terminal-5">
+                      Select a mission...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- RIGHT COLUMN: GLOBAL SIDEBAR -->
+          <aside class="global-sidebar">
+            <div class="sidebar-header">
+              <h2>Live Workflow State</h2>
+              <div class="sidebar-status">
+                SCOPE: <span id="global-scope">GLOBAL</span> | STATUS:
+                <span id="global-status" style="color: var(--success)"
+                  >READY</span
+                >
+              </div>
+            </div>
+            <div class="sidebar-content">
+              <pre><code id="global-json" class="language-json">
+// The complete, accumulated JSON state
+// of your automated workflow will appear here.
+// Run a simulation to see it build up in real-time.
+          </code></pre>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <!-- END DASHBOARD PAGE -->
+
+      <!-- DOCUMENTATION PAGE -->
+      <div id="documentation-page" class="page-section">
+        <h1
+          style="
+            margin-bottom: 2rem;
+            font-family: &quot;Outfit&quot;, sans-serif;
+          "
+        >
+          System Documentation
+        </h1>
+
+        <div class="doc-grid">
+          <!-- ENGINE 1 -->
+          <div class="doc-card">
+            <h3>🔍 Web Content Engine</h3>
+            <div class="doc-meta">
+              Type: Content Generation | Status: Production
+            </div>
+            <div class="doc-description">
+              Transforms keywords into semantic authority through SERP analysis,
+              content generation, and internal linking. Utilizes GPT-4o for
+              content creation and implements advanced SEO strategies.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">SERP Analysis</span>
+              <span class="doc-tag">GPT-4o</span>
+              <span class="doc-tag">Internal Linking</span>
+              <span class="doc-tag">Schema Markup</span>
+            </div>
+            <button
+              class="run-btn"
+              style="
+                margin-top: 1.5rem;
+                background: transparent;
+                border: 1px solid var(--accent-blue);
+                color: var(--accent-blue);
+              "
+              onclick="openWorkflowSchema(1, 'default')"
+            >
+              View Visual Schema
+            </button>
+          </div>
+
+          <!-- ENGINE 2 -->
+          <div class="doc-card">
+            <h3>📊 SEO Monitor Engine</h3>
+            <div class="doc-meta">
+              Type: Monitoring & Analytics | Status: Production
+            </div>
+            <div class="doc-description">
+              Continuous monitoring of search rankings, AI visibility (ChatGPT,
+              Perplexity), and index health. Provides real-time alerts and
+              competitive intelligence.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">Rank Tracking</span>
+              <span class="doc-tag">AI Visibility</span>
+              <span class="doc-tag">Index Monitoring</span>
+              <span class="doc-tag">Competitive Analysis</span>
+            </div>
+            <button
+              class="run-btn"
+              style="
+                margin-top: 1.5rem;
+                background: transparent;
+                border: 1px solid var(--accent-blue);
+                color: var(--accent-blue);
+              "
+              onclick="openWorkflowSchema(2, 'default')"
+            >
+              View Visual Schema
+            </button>
+          </div>
+
+          <!-- ENGINE 3 -->
+          <div class="doc-card">
+            <h3>🎬 UGC Factory</h3>
+            <div class="doc-meta">
+              Type: Video Generation | Status: Production
+            </div>
+            <div class="doc-description">
+              Automated user-generated content creation using AI. Generates
+              viral hooks, assembles video content, creates AI influencers, and
+              produces multi-variant ads using Sora, Runway, and HeyGen.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">Sora AI</span>
+              <span class="doc-tag">HeyGen</span>
+              <span class="doc-tag">FFmpeg</span>
+              <span class="doc-tag">Runway</span>
+              <span class="doc-tag">Whisper AI</span>
+            </div>
+            <button
+              class="run-btn"
+              style="
+                margin-top: 1.5rem;
+                background: transparent;
+                border: 1px solid var(--accent-blue);
+                color: var(--accent-blue);
+              "
+              onclick="openWorkflowSchema(3, 'default')"
+            >
+              View Visual Schema
+            </button>
+          </div>
+
+          <!-- ENGINE 4 -->
+          <div class="doc-card">
+            <h3>💬 Reddit Insider</h3>
+            <div class="doc-meta">
+              Type: Community Engagement | Status: Production
+            </div>
+            <div class="doc-description">
+              Automated Reddit engagement through subreddit scanning,
+              intelligent reply generation, technical support automation, and
+              brand monitoring. Leverages PRAW API and GPT-4o for contextual
+              responses.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">PRAW API</span>
+              <span class="doc-tag">Sentiment Analysis</span>
+              <span class="doc-tag">Pushshift</span>
+              <span class="doc-tag">Trend Detection</span>
+            </div>
+            <button
+              class="run-btn"
+              style="
+                margin-top: 1.5rem;
+                background: transparent;
+                border: 1px solid var(--accent-blue);
+                color: var(--accent-blue);
+              "
+              onclick="openWorkflowSchema(4, 'default')"
+            >
+              View Visual Schema
+            </button>
+          </div>
+
+          <!-- ENGINE 5 -->
+          <div class="doc-card">
+            <h3>📌 Pinterest Focus</h3>
+            <div class="doc-meta">
+              Type: Visual Discovery | Status: Production
+            </div>
+            <div class="doc-description">
+              Pinterest SEO strategy, visual generation, content repurposing,
+              and trend analysis. Integrates with Canva API, Midjourney, and
+              Tailwind for optimal pin performance.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">Pinterest API</span>
+              <span class="doc-tag">Canva API</span>
+              <span class="doc-tag">Midjourney</span>
+              <span class="doc-tag">Tailwind</span>
+            </div>
+            <button
+              class="run-btn"
+              style="
+                margin-top: 1.5rem;
+                background: transparent;
+                border: 1px solid var(--accent-blue);
+                color: var(--accent-blue);
+              "
+              onclick="openWorkflowSchema(5, 'default')"
+            >
+              View Visual Schema
+            </button>
+          </div>
+
+          <!-- AGENTS -->
+          <div class="doc-card">
+            <h3>🤖 Autonomous Agents</h3>
+            <div class="doc-meta">Type: Core System | Status: Production</div>
+            <div class="doc-description">
+              Specialized agents power each engine: SERP Analyst, Content
+              Architect, Link Weaver, Rank Tracker, Hook Master, Asset
+              Architect, Scanner, Reply Bot, Pin Designer, and more. Each agent
+              is optimized for specific tasks within the automation pipeline.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">Multi-Agent</span>
+              <span class="doc-tag">Task Specialization</span>
+              <span class="doc-tag">Orchestration</span>
+            </div>
+          </div>
+
+          <!-- BLUEPRINTS -->
+          <div class="doc-card">
+            <h3>📐 Workflow Blueprints</h3>
+            <div class="doc-meta">Type: Architecture | Status: Production</div>
+            <div class="doc-description">
+              Pre-configured workflow templates for common automation scenarios:
+              Semantic Authority, Viral Pipeline, Community Engagement, Visual
+              Discovery, and more. Each blueprint defines agent sequences, data
+              transformations, and output formats.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">Templates</span>
+              <span class="doc-tag">Reusable</span>
+              <span class="doc-tag">Configurable</span>
+            </div>
+          </div>
+
+          <!-- INTEGRATIONS -->
+          <div class="doc-card">
+            <h3>🔌 API Integrations</h3>
+            <div class="doc-meta">
+              Type: External Services | Status: Production
+            </div>
+            <div class="doc-description">
+              Integrated with 15+ external APIs: OpenAI GPT-4o, Midjourney,
+              Sora, Runway, HeyGen, PRAW (Reddit), Pinterest API, Canva,
+              Shopify, FFmpeg, Whisper AI, Google Trends, Pushshift, Tailwind,
+              and Later.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">OpenAI</span>
+              <span class="doc-tag">Reddit</span>
+              <span class="doc-tag">Pinterest</span>
+              <span class="doc-tag">Video AI</span>
+            </div>
+          </div>
+
+          <!-- DATA PIPELINE -->
+          <div class="doc-card">
+            <h3>⚡ Data Pipeline</h3>
+            <div class="doc-meta">
+              Type: Infrastructure | Status: Production
+            </div>
+            <div class="doc-description">
+              Real-time data processing pipeline with JSON state management,
+              webhook integrations, S3 storage for assets, and PostgreSQL for
+              structured data. Supports parallel execution and fault tolerance.
+            </div>
+            <div class="doc-tags">
+              <span class="doc-tag">JSON State</span>
+              <span class="doc-tag">S3 Storage</span>
+              <span class="doc-tag">PostgreSQL</span>
+              <span class="doc-tag">Webhooks</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END DOCUMENTATION PAGE -->
+
+      <!-- WORKFLOWS PAGE -->
+      <div id="workflows-page" class="page-section">
+        <h1
+          style="
+            margin-bottom: 2rem;
+            font-family: &quot;Outfit&quot;, sans-serif;
+          "
+        >
+          Visual Workflows
+        </h1>
+
+        <div class="workflow-container">
+          <div class="workflow-engine-section" style="margin-bottom: 2rem">
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+            >
+              <div>
+                <label class="inspector-label">Select Core Engine</label>
+                <select
+                  id="schema-engine-select"
+                  class="workflow-mission-select"
+                  onchange="updateSchemaMissions()"
+                >
+                  <option value="1">1. Web Content Engine</option>
+                  <option value="2">2. SEO Monitor Engine</option>
+                  <option value="3">3. UGC Factory</option>
+                  <option value="4">4. Reddit Insider</option>
+                  <option value="5">5. Pinterest Focus</option>
+                </select>
+              </div>
+              <div>
+                <label class="inspector-label">Select Mission / Workflow</label>
+                <select
+                  id="schema-mission-select"
+                  class="workflow-mission-select"
+                  onchange="
+                    showMissionWorkflow(
+                      document.getElementById('schema-engine-select').value,
+                      this.value,
+                    )
+                  "
+                >
+                  <option value="default">Standard: Semantic Authority</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- DYNAMIC WORKFLOW VIEWER -->
+          <div id="dynamic-workflow-container" class="workflow-view-container">
+            <div class="workflow-schema" id="schema-view">
+              <!-- Dynamically generated Flowchart nodes -->
+            </div>
+
+            <div class="inspector-panel">
+              <div class="inspector-header">
+                <span>Architecture Inspector</span>
+                <span class="inspector-badge" id="node-type-badge">LIVE</span>
+              </div>
+              <div class="inspector-body" id="inspector-content">
+                <div class="inspector-section" id="inspector-welcome">
+                  <div
+                    style="
+                      text-align: center;
+                      padding: 2rem;
+                      color: var(--text-dim);
+                    "
+                  >
+                    <div style="font-size: 2rem; margin-bottom: 1rem">🔍</div>
+                    <p>
+                      Select any node in the flowchart to inspect its technical
+                      parameters and output payload.
+                    </p>
+                  </div>
+                </div>
+                <div id="inspector-data" style="display: none">
+                  <div class="inspector-section">
+                    <span class="inspector-label">Node Name</span>
+                    <div class="inspector-value" id="inspect-name">-</div>
+                  </div>
+                  <div class="inspector-section">
+                    <span class="inspector-label">Agent Capability</span>
+                    <div class="inspector-value" id="inspect-desc">-</div>
+                  </div>
+                  <div class="inspector-section">
+                    <span class="inspector-label">Mock Output Payload</span>
+                    <div class="inspector-value" id="inspect-output">{}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END WORKFLOWS PAGE -->
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <script>
+      // === DATA STORE ===
+      const missions = {
+        // ENGINE 1
+        1: {
+          default: {
+            desc: "Transform keywords into semantic authority.",
+            nodes: [
+              {
+                name: "SERP Analyst",
+                desc: "Gap Research",
+                log: "> READING SERP...\n> FOUND 3 GAPS.",
+                output: {
+                  step_1_serp_analysis: {
+                    target_keyword: "enterprise automation tools",
+                    search_volume: 4500,
+                    difficulty: 68,
+                    competitors_analyzed: [
+                      {
+                        domain: "zapier.com",
+                        da: 91,
+                        type: "Direct Product",
+                        weakness:
+                          "Generic content, lacks vertical specific examples",
+                      },
+                      {
+                        domain: "make.com",
+                        da: 85,
+                        type: "Technical Competitor",
+                        weakness: "High learning curve, poor beginner docs",
+                      },
+                    ],
+                    identified_gaps: [
+                      "No detailed breakdown of 'Agentic Workflows' for non-coders",
+                      "Lack of visual case studies for marketing teams",
+                      "Pricing comparison tables are outdated (2024 data)",
+                    ],
+                    opportunity_score: 8.5,
+                  },
+                },
+              },
+              {
+                name: "Content Strategist",
+                desc: "Outline",
+                log: "> GENERATING OUTLINE...\n> MAPPING ENTITIES.",
+                output: {
+                  step_2_content_strategy: {
+                    h1_title: "The 2026 Guide to Enterprise Agentic Automation",
+                    target_persona: "CTO / Head of Marketing",
+                    user_intent: "Informational -> Transactional",
+                    semantic_entities: [
+                      "LLM Orchestration",
+                      "Python for SEO",
+                      "Multi-Agent Systems",
+                      "RPA vs AI",
+                    ],
+                    structure: {
+                      intro:
+                        "The shift from linear automation (Zapier) to agentic loops.",
+                      h2_sections: [
+                        {
+                          title: "Why Rules-Based Automation is Dead",
+                          keywords: ["rigid workflows", "legacy rpa"],
+                        },
+                        {
+                          title: "Building Your First Agent Swarm",
+                          keywords: ["autogen", "langchain", "crewai"],
+                        },
+                        {
+                          title: "Case Study: Reducing Content Costs by 90%",
+                          keywords: ["roi", "cost reduction"],
+                        },
+                      ],
+                      faq_schema: [
+                        "What is agentic automation?",
+                        "Is Make.com suitable for enterprise?",
+                      ],
+                    },
+                  },
+                },
+              },
+              {
+                name: "SEO Author",
+                desc: "Drafting",
+                log: "> WRITING DRAFT...\n> CHECKING PERPLEXITY.",
+                output: {
+                  step_3_draft_production: {
+                    status: "complete",
+                    word_count: 2450,
+                    readability_level: "Grade 9",
+                    markdown_preview:
+                      "# The 2026 Guide to Enterprise Agentic Automation\n\nAutomation is no longer about connecting API A to API B. It is about giving machines a goal and letting them figure out the 'how'...\n\n## Why Rules-Based Automation is Dead\nLegacy tools like Zapier rely on 'If This Then That' logic. But what happens when 'That' changes? The workflow breaks...",
+                    internal_links_injected: [
+                      "/blog/agent-swarms-explained",
+                      "/case-studies/fintech-automation",
+                    ],
+                    perplexity_verification: {
+                      score: 98,
+                      cited_sources: 14,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          product_comparison: {
+            desc: "Dominate 'vs' keywords with breakdowns.",
+            nodes: [
+              {
+                name: "CSV / JSON Engine",
+                desc: "Input Data",
+                log: "> READING DATA SOURCE...\n> ENTRY: 'ClickUp vs Monday'",
+                output: {
+                  step_1_input_source: {
+                    source: "db_production_sched_v4",
+                    row_id: 142,
+                    comparison_target: {
+                      product_a: "ClickUp",
+                      product_b: "Monday.com",
+                      user_segment: "Enterprise Agencies",
+                    },
+                    required_data_points: [
+                      "Pricing (Annual)",
+                      "API Rate Limits",
+                      "Gantt Chart Capabilities",
+                      "AI Features",
+                    ],
+                  },
+                },
+              },
+              {
+                name: "OpenAI Analysis",
+                desc: "Comparison",
+                log: "> ANALYZING FEATURES...\n> COMPARING PRICING.",
+                output: {
+                  step_2_analytical_engine: {
+                    verdict: "ClickUp Wins for Value, Monday Wins for UX",
+                    key_differentiators: {
+                      pricing:
+                        "ClickUp offers unlimited guests on lower tiers, saving ~$400/mo for 10-person teams.",
+                      automation:
+                        "Monday's automation builder is more visual but has strict action limits on Pro plans.",
+                    },
+                    feature_matrix: [
+                      {
+                        feature: "Gantt",
+                        clickup: "Native (Strong)",
+                        monday: "Native (Visual)",
+                      },
+                      {
+                        feature: "AI Writer",
+                        clickup: "$5/user add-on",
+                        monday: "Beta (Limited)",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                name: "CMS Publish",
+                desc: "Webflow",
+                log: "> PUSHING TO WEBFLOW...\n> PUBLISHED.",
+                output: {
+                  step_3_cms_deployment: {
+                    platform: "Webflow",
+                    collection_id: "65a8f...",
+                    item_id: "65b9g...",
+                    slug: "clickup-vs-monday-agency-review-2026",
+                    status: "published",
+                    live_url:
+                      "https://flyrank.io/comparisons/clickup-vs-monday",
+                    meta_tags: {
+                      title:
+                        "ClickUp vs Monday: The Honest Agency Guide (2026)",
+                      description:
+                        "Don't buy the wrong tool. We tested both for 30 days. Here is why ClickUp wins on value but loses on speed.",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          faq_factory: {
+            desc: "Capture long-tail PAA questions.",
+            nodes: [
+              {
+                name: "PAA Scraper",
+                desc: "SerpAPI",
+                log: "> SCRAPING 'PAA'...",
+                output: {
+                  step_1_paa_extraction: {
+                    root_keyword: "programmatic seo",
+                    questions_found: 18,
+                    filtered_questions: [
+                      "Is programmatic SEO dead in 2026?",
+                      "How much does programmatic SEO cost?",
+                      "Can you do pSEO with Webflow?",
+                      "Best programmatic SEO tools for beginners",
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Answer Bot",
+                desc: "GPT-4",
+                log: "> DRAFTING ANSWERS...",
+                output: {
+                  step_2_answer_generation: {
+                    qa_pairs: [
+                      {
+                        q: "Is programmatic SEO dead in 2026?",
+                        a: "No, but 'spammatic' SEO is. Google's HCU update penalized thin content. Successful pSEO now requires robust data layers and unique user value per page, not just variable swapping.",
+                      },
+                      {
+                        q: "How much does programmatic SEO cost?",
+                        a: "It varies. A DIY stack (Airtable + Whalesync + Webflow) costs ~$100/mo. Enterprise solutions like FacetWP or custom Python scripts can range from $500 to $5,000 upfront.",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Schema Builder",
+                desc: "JSON-LD",
+                log: "> GENERATING SCHEMA...",
+                output: {
+                  step_3_schema_injection: {
+                    schema_type: "FAQPage",
+                    json_ld: {
+                      "@context": "https://schema.org",
+                      "@type": "FAQPage",
+                      mainEntity: [
+                        {
+                          "@type": "Question",
+                          name: "Is programmatic SEO dead in 2026?",
+                          acceptedAnswer: {
+                            "@type": "Answer",
+                            text: "No, but 'spammatic' SEO is...",
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          deep_research: {
+            desc: "Thought leadership deep dives.",
+            nodes: [
+              {
+                name: "Perplexity Sonar",
+                desc: "Fact Finding",
+                log: "> QUERYING WEB...",
+                output: {
+                  step_1_live_research: {
+                    topic: "The Future of AI Agents in Vertical SaaS",
+                    sources_scanned: 42,
+                    key_facts_extracted: [
+                      "Vertical SaaS market to reach $150B by 2028 (Source: Gartner)",
+                      "ServiceTitan's IPO filing mentions 'AI Agents' 84 times",
+                      "Toast is rolling out auto-inventory agents for restaurants",
+                    ],
+                    contrarian_viewpoints: [
+                      "AI agents will commoditize specialized SaaS workflow features",
+                      "Legacy players will struggle to integrate agentic layers due to technical debt",
+                    ],
+                  },
+                },
+              },
+              {
+                name: "GPT-5 Preview",
+                desc: "Synthesis",
+                log: "> DRAFTING...",
+                output: {
+                  step_2_synthesis: {
+                    thesis_statement:
+                      "Vertical SaaS creates the moat; AI Agents will fill it. The next unicorn won't be a CRM, it will be the Agent that runs the CRM.",
+                    argument_structure: [
+                      "The Death of the 'System of Record'",
+                      "The Rise of the 'System of Action'",
+                      "Data Moats are now Context Moats",
+                    ],
+                    tone_check: "Authoritative, Speculative, Data-Backed",
+                  },
+                },
+              },
+              {
+                name: "Citation Manager",
+                desc: "Formatting",
+                log: "> EXPORTING...",
+                output: {
+                  step_3_citation_formatting: {
+                    final_format: "Markdown",
+                    citation_style: "Academic (footnotes)",
+                    link_verification_status: "100% Valid",
+                    export_path: "/content/deep-dives/vertical-saas-agents.md",
+                  },
+                },
+              },
+            ],
+          },
+          tech_blog: {
+            desc: "Scale engineering content.",
+            nodes: [
+              {
+                name: "Code Formatter",
+                desc: "JSON / Webhook",
+                log: "> PARSING SNIPPETS...",
+                output: {
+                  step_1_raw_input: {
+                    engineer_email: "alex@flyrank.io",
+                    topic: "Optimizing Postgres for Vector Search",
+                    raw_notes:
+                      "We switched from Pinecone to pgvector. Reduced latency by 40ms. Here is the config used...",
+                    code_snippet_lang: "SQL / Python",
+                    code_block:
+                      "CREATE EXTENSION vector;\nCREATE TABLE items (id bigserial PRIMARY KEY, embedding vector(3));",
+                  },
+                },
+              },
+              {
+                name: "Technical Writer",
+                desc: "Gemini",
+                log: "> EXPANDING...",
+                output: {
+                  step_2_tutorial_expansion: {
+                    title:
+                      "Migration Guide: Pinecone to pgvector for Large Scale SaaS",
+                    complexity: "Advanced",
+                    sections_generated: [
+                      "Why we left a managed vector DB",
+                      "Setting up pgvector on AWS RDS",
+                      "Benchmarking: 40ms latency reduction explained",
+                    ],
+                    code_explanation:
+                      "The 'vector(3)' argument specifies the dimensionality...",
+                  },
+                },
+              },
+              {
+                name: "Approval Gate",
+                desc: "Gmail",
+                log: "> SENDING...",
+                output: {
+                  step_3_human_approval: {
+                    status: "pending_review",
+                    slack_notification_sent: true,
+                    recipient: "dev-rel@flyrank.io",
+                    preview_link:
+                      "https://internal.flyrank.io/drafts/pgvector-migration",
+                  },
+                },
+              },
+            ],
+          },
+        },
+        // ENGINE 2
+        2: {
+          default: {
+            desc: "24/7 Technical & Content Health.",
+            nodes: [
+              {
+                name: "Tech Auditor",
+                desc: "Core Web Vitals",
+                log: "> CHECKING...",
+                output: {
+                  step_1_tech_audit: {
+                    url: "https://flyrank.io/pricing",
+                    lighthouse_score: {
+                      performance: 98,
+                      accessibility: 100,
+                      seo: 100,
+                    },
+                    core_web_vitals: {
+                      LCP: "1.2s (Good)",
+                      CLS: 0.0,
+                      FID: "12ms",
+                    },
+                    critical_errors: [],
+                  },
+                },
+              },
+              {
+                name: "Delta Monitor",
+                desc: "Diff Check",
+                log: "> COMPARING...",
+                output: {
+                  step_2_delta_comparison: {
+                    snapshot_t0: "2026-02-08",
+                    snapshot_t1: "2026-02-09",
+                    diff_detected: true,
+                    changes: [
+                      {
+                        element: "h2.hero-subtitle",
+                        old: "Automation for everyone",
+                        new: "Automation for enterprise scale",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Content Patcher",
+                desc: "HTML Inject",
+                log: "> PATCHING...",
+                output: {
+                  step_3_auto_fix: {
+                    action: "schema_repair",
+                    target: "faq-section",
+                    details: "Added missing 'mainEntity' wrapper to FAQ block",
+                    status: "deployed_to_staging",
+                  },
+                },
+              },
+            ],
+          },
+          rank_tracker: {
+            desc: "Response to ranking drops.",
+            nodes: [
+              {
+                name: "Rank Watcher",
+                desc: "Ahrefs API",
+                log: "> CHECKING...",
+                output: {
+                  step_1_rank_check: {
+                    keyword: "ai automation agency",
+                    current_pos: 8,
+                    previous_pos: 3,
+                    delta: -5,
+                    url: "https://flyrank.io/services/automation",
+                  },
+                },
+              },
+              {
+                name: "Volatility Analyst",
+                desc: "Logic",
+                log: "> ANALYZING...",
+                output: {
+                  step_2_root_cause_analysis: {
+                    reason: "Competitor Content Update",
+                    evidence:
+                      "Competitor 'Make.com' published a new guide 48h ago gaining 12 backlinks.",
+                    recommendation:
+                      "Update content with new 2026 case studies.",
+                  },
+                },
+              },
+              {
+                name: "Alert Bot",
+                desc: "Slack",
+                log: "> ALERTING...",
+                output: {
+                  step_3_alert_dispatch: {
+                    channel: "#seo-emergency",
+                    priority: "HIGH",
+                    message:
+                      "⚠️ DROP DETECTED: 'ai automation agency' fell to #8. Cause: Competitor Content Velocity.",
+                  },
+                },
+              },
+            ],
+          },
+          ai_visibility: {
+            desc: "Track brand in AI answers.",
+            nodes: [
+              {
+                name: "AI-Search Prober",
+                desc: "SE Ranking",
+                log: "> ASKING GPT...",
+                output: {
+                  step_1_llm_query: {
+                    prompt:
+                      "What are the best tools for enterprise SEO automation in 2026?",
+                    models_tested: [
+                      "GPT-4o",
+                      "Claude 3.5 Sonnet",
+                      "Perplexity",
+                    ],
+                    share_of_voice: "33%",
+                  },
+                },
+              },
+              {
+                name: "Mention Tracker",
+                desc: "Analysis",
+                log: "> CHECKING...",
+                output: {
+                  step_2_mention_analysis: {
+                    mentioned: true,
+                    sentiment: "positive",
+                    context:
+                      "Listed as a top contender for 'Workflow Orchestration' alongside Zapier and n8n.",
+                    missing_keywords: ["compliance", "security"],
+                  },
+                },
+              },
+            ],
+          },
+          index_watchdog: {
+            desc: "Ensure indexing.",
+            nodes: [
+              {
+                name: "Sitemap Crawler",
+                desc: "Parser",
+                log: "> FETCHING...",
+                output: {
+                  step_1_sitemap_parse: {
+                    total_urls: 452,
+                    new_urls: 3,
+                    last_mod: "2026-02-09T09:00:00Z",
+                  },
+                },
+              },
+              {
+                name: "Index Checker",
+                desc: "API",
+                log: "> CHECKING...",
+                output: {
+                  step_2_google_index_check: {
+                    status: "warning",
+                    deindexed_urls: ["https://flyrank.io/blog/old-post-2023"],
+                    reason: "Redirect Error (5xx)",
+                  },
+                },
+              },
+            ],
+          },
+          gap_analyzer: {
+            desc: "Find competitor gaps.",
+            nodes: [
+              {
+                name: "SERP Watch",
+                desc: "SerpAPI",
+                log: "> MONITORING...",
+                output: {
+                  step_1_serp_scan: {
+                    query: "saas marketing automation",
+                    new_entrant_detected: "Apollo.io",
+                    content_type: "Interactive Calculator",
+                  },
+                },
+              },
+              {
+                name: "Gap Calculator",
+                desc: "GPT-4o",
+                log: "> COMPARING...",
+                output: {
+                  step_2_gap_identification: {
+                    missing_asset: "ROI Calculator",
+                    impact_estimation: "High (Competitor capturing intent)",
+                    action:
+                      "Generate spec for 'Marketing ROI Calculator' widget.",
+                  },
+                },
+              },
+            ],
+          },
+        },
+        // ENGINE 3, 4, 5 - Expanded Data
+        3: {
+          default: {
+            desc: "Viral Video Pipeline.",
+            nodes: [
+              {
+                name: "Hook Master",
+                desc: "Retention",
+                log: "> ANALYZING VIRAL PATTERNS...\n> TESTING RETENTION CURVES...\n> HOOK VARIANTS GENERATED.",
+                output: {
+                  step_1_hook_generation: {
+                    campaign_id: "ugc_saas_demo_2026_02",
+                    product: "FlyRank Automation Platform",
+                    target_platform: "TikTok / Instagram Reels",
+                    concept: "Contrarian Advice + Pattern Interrupt",
+                    hook_variants: [
+                      {
+                        text: "Stop using Zapier. I'm dead serious.",
+                        predicted_retention_3s: 0.92,
+                        emotion: "shock",
+                        cta_type: "curiosity_gap",
+                      },
+                      {
+                        text: "I wasted $10k on ads before I learned this...",
+                        predicted_retention_3s: 0.89,
+                        emotion: "regret_avoidance",
+                        cta_type: "social_proof",
+                      },
+                      {
+                        text: "This 1-line automation saved my startup.",
+                        predicted_retention_3s: 0.87,
+                        emotion: "hope",
+                        cta_type: "transformation",
+                      },
+                    ],
+                    selected_hook: "Stop using Zapier. I'm dead serious.",
+                    script_outline: {
+                      "0-3s": "Hook + Visual Shock (Red Alert Overlay)",
+                      "3-8s": "Problem Agitation (Show Zapier Pricing)",
+                      "8-15s": "Solution Reveal (FlyRank Dashboard)",
+                      "15-20s": "Social Proof (Testimonial Overlay)",
+                      "20-25s": "CTA (Link in Bio)",
+                    },
+                    voice_direction: "Fast-paced, assertive, no filler words",
+                  },
+                },
+              },
+              {
+                name: "Asset Architect",
+                desc: "Midjourney",
+                log: "> GENERATING VISUAL ASSETS...\n> RENDERING 4K FRAMES...\n> APPLYING BRAND GUIDELINES.",
+                output: {
+                  step_2_visual_assets: {
+                    total_assets: 8,
+                    midjourney_prompts: [
+                      {
+                        id: "scene_1_hook",
+                        prompt:
+                          "hyper-realistic clean desk setup, macbook pro with code editor, depth of field, cinematic lighting, dark mode aesthetic --ar 9:16 --style raw --v 6",
+                        purpose: "Hook Background",
+                        render_url: "s3://flyrank-ugc/renders/scene1_v4.png",
+                      },
+                      {
+                        id: "scene_2_problem",
+                        prompt:
+                          "futuristic server room, neon blue lights, cables everywhere, overwhelmed developer, cinematic --ar 9:16 --chaos 20",
+                        purpose: "Problem Visualization",
+                        render_url: "s3://flyrank-ugc/renders/scene2_v4.png",
+                      },
+                      {
+                        id: "scene_3_solution",
+                        prompt:
+                          "minimalist SaaS dashboard, clean UI, automation workflows, glowing connections, professional --ar 9:16 --style raw",
+                        purpose: "Solution Demo",
+                        render_url: "s3://flyrank-ugc/renders/scene3_v4.png",
+                      },
+                    ],
+                    stock_footage: [
+                      {
+                        source: "Artgrid",
+                        clip_id: "AG_2024_DEV_042",
+                        description:
+                          "Developer typing on mechanical keyboard (close-up)",
+                        duration: "4.2s",
+                      },
+                    ],
+                    overlay_graphics: [
+                      "price_comparison_table.png",
+                      "testimonial_quote_card.png",
+                      "cta_arrow_animated.gif",
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Assembler",
+                desc: "FFmpeg",
+                log: "> SYNCING AUDIO TRACKS...\n> APPLYING TRANSITIONS...\n> RENDERING FINAL EXPORT.",
+                output: {
+                  step_3_video_render: {
+                    project_name: "FlyRank_Zapier_Killer_v3",
+                    resolution: "1080x1920 (9:16)",
+                    fps: 60,
+                    duration: "24.8s",
+                    timeline: {
+                      "0.0s - 3.0s": {
+                        visual: "Midjourney Scene 1 + Zoom In Effect",
+                        audio: "Voiceover: 'Stop using Zapier...'",
+                        overlay: "Red Alert Border + Subtitle",
+                      },
+                      "3.0s - 8.0s": {
+                        visual: "Screen Recording: Zapier Pricing Page",
+                        audio:
+                          "Voiceover: 'Here's why it's bleeding you dry...'",
+                        overlay: "Price Highlight Circles",
+                      },
+                      "8.0s - 15.0s": {
+                        visual: "FlyRank Dashboard Demo (Screen Recording)",
+                        audio:
+                          "Voiceover: 'This does the same thing for $0...'",
+                        overlay: "Feature Callouts",
+                      },
+                      "15.0s - 20.0s": {
+                        visual: "Testimonial Card Overlay",
+                        audio: "Background Music Swell",
+                        overlay: "5-Star Rating Animation",
+                      },
+                      "20.0s - 24.8s": {
+                        visual: "CTA Screen (Link in Bio)",
+                        audio: "Voiceover: 'Link in bio. You're welcome.'",
+                        overlay: "Animated Arrow Pointing Up",
+                      },
+                    },
+                    audio_layers: {
+                      voiceover: {
+                        source: "ElevenLabs",
+                        voice: "Adam (Assertive)",
+                        speed: "1.15x",
+                        volume: "-3dB",
+                      },
+                      background_music: {
+                        track: "Epidemic Sound - Tech Minimal Beat 042",
+                        volume: "-18dB",
+                        fade_in: "0s",
+                        fade_out: "23s",
+                      },
+                      sfx: [
+                        { time: "0.5s", sound: "whoosh.mp3", volume: "-12dB" },
+                        {
+                          time: "8.2s",
+                          sound: "notification_ding.mp3",
+                          volume: "-10dB",
+                        },
+                      ],
+                    },
+                    export_settings: {
+                      codec: "H.264",
+                      bitrate: "8000kbps",
+                      color_space: "sRGB",
+                      captions: "burned_in",
+                    },
+                    final_url:
+                      "s3://flyrank-ugc/exports/zapier_killer_v3_final.mp4",
+                    file_size: "24.3 MB",
+                    estimated_reach:
+                      "50k - 200k views (based on similar content)",
+                  },
+                },
+              },
+            ],
+          },
+          influencer_gen: {
+            desc: "AI Influencer Pipeline",
+            nodes: [
+              {
+                name: "Avatar Creator",
+                desc: "Synthesia / HeyGen",
+                log: "> GENERATING PHOTOREALISTIC AVATAR...\n> TRAINING FACIAL EXPRESSIONS...\n> RENDERING IDLE ANIMATIONS.",
+                output: {
+                  step_1_avatar_creation: {
+                    platform: "HeyGen Studio",
+                    avatar_type: "Custom (Brand Spokesperson)",
+                    base_characteristics: {
+                      age: "28-32",
+                      ethnicity: "Ambiguous (Appeals to global audience)",
+                      style: "Professional Casual (Hoodie + Minimal Jewelry)",
+                      background: "Modern Office / Home Studio",
+                    },
+                    training_data: {
+                      reference_images: 24,
+                      voice_samples: "12 minutes",
+                      gesture_library: [
+                        "Head Nod",
+                        "Hand Gestures",
+                        "Smile Variations",
+                      ],
+                    },
+                    animation_engine: "HeyGen 3.0 (Physics-Based)",
+                    lip_sync_accuracy: 0.98,
+                    render_status: "Complete",
+                    avatar_url: "s3://flyrank-ugc/avatars/spokesperson_v2.mp4",
+                  },
+                },
+              },
+              {
+                name: "Script Generator",
+                desc: "GPT-4o",
+                log: "> ANALYZING TOP PERFORMING SCRIPTS...\n> GENERATING VARIATIONS...\n> OPTIMIZING FOR RETENTION.",
+                output: {
+                  step_2_script_generation: {
+                    input_brief:
+                      "Explain FlyRank's automation in 30s for B2B SaaS founders",
+                    tone: "Conversational, Authoritative, No Fluff",
+                    script:
+                      "Hey, I'm Alex. If you're still manually posting content in 2026, we need to talk. FlyRank automates your entire content pipeline—from research to publishing—while you sleep. No code. No complexity. Just results. We've helped 500+ SaaS companies scale their organic reach by 10x. Want in? Link below.",
+                    word_count: 52,
+                    estimated_duration: "28s",
+                    cta: "Link in bio for free trial",
+                  },
+                },
+              },
+              {
+                name: "Video Composer",
+                desc: "Assembly",
+                log: "> SYNCING AVATAR + SCRIPT...\n> ADDING B-ROLL...\n> EXPORTING FINAL.",
+                output: {
+                  step_3_final_composition: {
+                    avatar_video: "spokesperson_v2.mp4",
+                    script_audio: "script_tts_optimized.mp3",
+                    b_roll_inserts: [
+                      {
+                        time: "8s",
+                        clip: "dashboard_demo.mp4",
+                        duration: "3s",
+                      },
+                      {
+                        time: "18s",
+                        clip: "testimonial_montage.mp4",
+                        duration: "4s",
+                      },
+                    ],
+                    lower_third: "Alex Chen | Head of Growth @ FlyRank",
+                    final_export:
+                      "s3://flyrank-ugc/influencer/alex_intro_v1.mp4",
+                  },
+                },
+              },
+            ],
+          },
+          lip_sync: {
+            desc: "Testimonial Lip-Sync",
+            nodes: [
+              {
+                name: "Audio Processor",
+                desc: "Whisper AI",
+                log: "> TRANSCRIBING AUDIO...\n> DETECTING PHONEMES...\n> GENERATING SYNC MAP.",
+                output: {
+                  step_1_audio_analysis: {
+                    input_audio: "customer_testimonial_raw.mp3",
+                    duration: "14.5s",
+                    transcription:
+                      "FlyRank completely transformed how we do content. We went from 2 blog posts a month to 20, and our traffic tripled.",
+                    phoneme_map: [
+                      { time: "0.0s", phoneme: "F", mouth_shape: "f_shape" },
+                      { time: "0.1s", phoneme: "L", mouth_shape: "l_shape" },
+                    ],
+                    emotion_detection: {
+                      "0-5s": "Excited",
+                      "5-10s": "Confident",
+                      "10-14.5s": "Satisfied",
+                    },
+                  },
+                },
+              },
+              {
+                name: "Lip Sync Engine",
+                desc: "Wav2Lip / Synthesia",
+                log: "> MAPPING PHONEMES TO VIDEO...\n> RENDERING FACIAL MOVEMENTS...\n> QUALITY CHECK: PASS.",
+                output: {
+                  step_2_lip_synchronization: {
+                    input_video: "actor_neutral_pose.mp4",
+                    input_audio: "customer_testimonial_raw.mp3",
+                    sync_engine: "Wav2Lip Pro",
+                    fps: 60,
+                    sync_accuracy_score: 0.99,
+                    artifacts_detected: "none",
+                    post_processing: [
+                      "Color Grading Applied",
+                      "Noise Reduction",
+                      "Sharpening Filter",
+                    ],
+                    output_video:
+                      "s3://flyrank-ugc/testimonials/customer_synced_v2.mp4",
+                  },
+                },
+              },
+            ],
+          },
+          screen_ugc: {
+            desc: "SaaS Screen Recording UGC",
+            nodes: [
+              {
+                name: "Screen Recorder",
+                desc: "Loom / ScreenFlow",
+                log: "> RECORDING SCREEN...\n> TRACKING CURSOR...\n> CAPTURING AUDIO.",
+                output: {
+                  step_1_screen_capture: {
+                    tool: "ScreenFlow",
+                    resolution: "2560x1440 (Retina)",
+                    recording_duration: "45s",
+                    cursor_tracking: "enabled",
+                    click_highlights: "enabled",
+                    audio_input: "Blue Yeti Microphone",
+                    raw_file: "s3://flyrank-ugc/raw/screen_demo_raw.mov",
+                    file_size: "180 MB",
+                  },
+                },
+              },
+              {
+                name: "UGC Enhancer",
+                desc: "Post-Production",
+                log: "> SMOOTHING CURSOR...\n> ADDING ZOOM EFFECTS...\n> OVERLAYING PIP.",
+                output: {
+                  step_2_screen_augmentation: {
+                    cursor_smoothing: "applied (bezier curves)",
+                    zoom_events: [
+                      {
+                        time: "2.0s",
+                        target: "Sign Up Button",
+                        scale: 1.5,
+                        duration: "1.2s",
+                      },
+                      {
+                        time: "12.5s",
+                        target: "Analytics Dashboard",
+                        scale: 1.8,
+                        duration: "2.0s",
+                      },
+                      {
+                        time: "28.0s",
+                        target: "Export Button",
+                        scale: 1.4,
+                        duration: "1.0s",
+                      },
+                    ],
+                    pip_overlay: {
+                      source: "actor_reactions_v2.mp4",
+                      position: "bottom_right",
+                      size: "20% of frame",
+                      border: "2px white with shadow",
+                    },
+                    annotations: [
+                      {
+                        time: "5s",
+                        text: "This is the automation builder",
+                        style: "callout_arrow",
+                      },
+                      {
+                        time: "15s",
+                        text: "Watch this...",
+                        style: "speech_bubble",
+                      },
+                    ],
+                    background_music: {
+                      track: "Upbeat Corporate Loop 12",
+                      volume: "-22dB",
+                    },
+                  },
+                },
+              },
+              {
+                name: "Exporter",
+                desc: "Final Render",
+                log: "> RENDERING 1080p...\n> OPTIMIZING FOR SOCIAL...\n> EXPORT COMPLETE.",
+                output: {
+                  step_3_final_export: {
+                    output_formats: [
+                      {
+                        platform: "Instagram Reels",
+                        resolution: "1080x1920",
+                        file: "screen_ugc_ig.mp4",
+                      },
+                      {
+                        platform: "YouTube Shorts",
+                        resolution: "1080x1920",
+                        file: "screen_ugc_yt.mp4",
+                      },
+                      {
+                        platform: "TikTok",
+                        resolution: "1080x1920",
+                        file: "screen_ugc_tt.mp4",
+                      },
+                    ],
+                    captions: "burned_in (yellow, bold)",
+                    total_export_time: "4m 32s",
+                    storage_location:
+                      "s3://flyrank-ugc/exports/screen_demo_final/",
+                  },
+                },
+              },
+            ],
+          },
+          ad_factory: {
+            desc: "Multi-Variant Ad Generator",
+            nodes: [
+              {
+                name: "Concept Generator",
+                desc: "GPT-4 + DALL-E",
+                log: "> ANALYZING WINNING ADS...\n> GENERATING CONCEPTS...\n> RENDERING VARIATIONS.",
+                output: {
+                  step_1_concept_generation: {
+                    campaign_goal: "Drive Free Trial Signups",
+                    target_audience: "SaaS Founders, 25-45, Tech-Savvy",
+                    concepts: [
+                      {
+                        id: "concept_a",
+                        theme: "Cinematic Transformation",
+                        visual_style: "Sora-generated cinematic scenes",
+                        hook: "Before FlyRank vs After FlyRank",
+                        estimated_ctr: "4.2%",
+                      },
+                      {
+                        id: "concept_b",
+                        theme: "Documentary Style",
+                        visual_style: "Veo-generated realistic footage",
+                        hook: "Real founder testimonial montage",
+                        estimated_ctr: "3.8%",
+                      },
+                      {
+                        id: "concept_c",
+                        theme: "Abstract / Futuristic",
+                        visual_style: "Runway Gen3 abstract visuals",
+                        hook: "The future of automation is here",
+                        estimated_ctr: "3.1%",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Video Generator",
+                desc: "Sora / Runway",
+                log: "> GENERATING VIDEO VARIANTS...\n> APPLYING BRAND ASSETS...\n> RENDERING FINALS.",
+                output: {
+                  step_2_multivariate_generation: {
+                    variation_a: {
+                      engine: "Sora",
+                      prompt:
+                        "Cinematic shot of a stressed entrepreneur at messy desk, transitions to calm organized workspace with automation running on screens, professional lighting, 9:16 --style cinematic",
+                      duration: "15s",
+                      render_url: "s3://flyrank-ads/var_a_cinematic.mp4",
+                    },
+                    variation_b: {
+                      engine: "Veo",
+                      prompt:
+                        "Documentary-style interview with SaaS founder in modern office, discussing automation transformation, natural lighting, handheld camera feel",
+                      duration: "15s",
+                      render_url: "s3://flyrank-ads/var_b_documentary.mp4",
+                    },
+                    variation_c: {
+                      engine: "Runway Gen3",
+                      prompt:
+                        "Abstract visualization of data flowing through neural networks, transforming into content pieces, futuristic aesthetic, vibrant colors",
+                      duration: "15s",
+                      render_url: "s3://flyrank-ads/var_c_abstract.mp4",
+                    },
+                  },
+                },
+              },
+              {
+                name: "A/B Test Predictor",
+                desc: "ML Model",
+                log: "> ANALYZING HISTORICAL DATA...\n> PREDICTING PERFORMANCE...\n> RECOMMENDING WINNER.",
+                output: {
+                  step_3_performance_prediction: {
+                    model: "FlyRank Ad Performance Predictor v2.1",
+                    training_data: "10,000+ previous ad campaigns",
+                    predictions: {
+                      variation_a_cinematic: {
+                        predicted_ctr: "4.2%",
+                        predicted_cpa: "$12.50",
+                        confidence: 0.87,
+                      },
+                      variation_b_documentary: {
+                        predicted_ctr: "3.8%",
+                        predicted_cpa: "$14.20",
+                        confidence: 0.82,
+                      },
+                      variation_c_abstract: {
+                        predicted_ctr: "3.1%",
+                        predicted_cpa: "$18.90",
+                        confidence: 0.79,
+                      },
+                    },
+                    recommendation:
+                      "Launch Variation A (Cinematic) as primary, B as secondary test",
+                    suggested_budget_split: {
+                      variation_a: "70%",
+                      variation_b: "30%",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        4: {
+          default: {
+            desc: "Community Engagement Automation",
+            nodes: [
+              {
+                name: "Subreddit Scanner",
+                desc: "PRAW API",
+                log: "> SCANNING SUBREDDITS...\n> FILTERING BY KEYWORDS...\n> ANALYZING SENTIMENT...\n> FOUND HIGH-INTENT THREADS.",
+                output: {
+                  step_1_subreddit_scan: {
+                    scan_timestamp: "2026-02-09T14:30:00Z",
+                    target_subreddits: [
+                      "r/SaaS",
+                      "r/Entrepreneur",
+                      "r/SideProject",
+                      "r/marketing",
+                      "r/startups",
+                    ],
+                    keywords_monitored: [
+                      "struggling with SEO",
+                      "how to rank on Google",
+                      "marketing automation",
+                      "content creation tools",
+                      "zero traffic problem",
+                    ],
+                    scan_results: {
+                      total_threads_scanned: 1247,
+                      relevant_threads_found: 18,
+                      high_intent_matches: 5,
+                    },
+                    top_opportunities: [
+                      {
+                        thread_id: "1a2b3c4d",
+                        subreddit: "r/SaaS",
+                        title:
+                          "I built a cool tool but getting 0 traffic. What am I doing wrong?",
+                        author: "u/frustrated_founder",
+                        upvotes: 42,
+                        comments: 18,
+                        post_age: "3 hours",
+                        url: "https://reddit.com/r/SaaS/comments/1a2b3c4d/",
+                        sentiment: "desperate",
+                        intent_score: 9.2,
+                        excerpt:
+                          "Spent 6 months building this SaaS. It's actually good. But I have zero idea how to get people to find it. SEO seems impossible...",
+                      },
+                      {
+                        thread_id: "5e6f7g8h",
+                        subreddit: "r/Entrepreneur",
+                        title:
+                          "Burned $5k on SEO agency. Still no results. DIY alternatives?",
+                        author: "u/bootstrapped_mike",
+                        upvotes: 89,
+                        comments: 34,
+                        post_age: "1 hour",
+                        url: "https://reddit.com/r/Entrepreneur/comments/5e6f7g8h/",
+                        sentiment: "frustrated",
+                        intent_score: 8.8,
+                        excerpt:
+                          "Hired an agency. They did keyword research and wrote 3 blog posts. $5k later, I'm still on page 5...",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Reply Generator",
+                desc: "GPT-4o",
+                log: "> ANALYZING THREAD CONTEXT...\n> GENERATING VALUE-FIRST REPLY...\n> CHECKING TONE...\n> REPLY READY.",
+                output: {
+                  step_2_reply_generation: {
+                    target_thread: "1a2b3c4d",
+                    context_analysis: {
+                      user_pain_point:
+                        "Zero organic traffic despite having a quality product",
+                      user_knowledge_level: "Beginner (SEO)",
+                      thread_sentiment: "Seeking genuine help, not pitches",
+                      community_norms:
+                        "r/SaaS values actionable advice over self-promotion",
+                    },
+                    generated_reply: {
+                      text: "Hey! I've been there. Here's what actually worked for me:\n\n1. **Start with 'Jobs to be Done' content** - Don't write about your product. Write about the problem it solves. Example: If you built a time-tracker, write 'How to bill clients accurately as a freelancer.'\n\n2. **Use Ahrefs' free keyword tool** - Find keywords with KD < 20. These are winnable.\n\n3. **Automate the boring parts** - I use FlyRank to handle research + drafting. Saves me ~15 hours/week. (Not affiliated, just what I use.)\n\n4. **Internal linking** - Every new post should link to 2-3 older posts. Google loves this.\n\nDM me if you want me to audit your site for free. Happy to help.",
+                      word_count: 118,
+                      tone_check: "Helpful, Experienced, Non-Salesy",
+                      brand_mention: "Subtle (1 mention, contextual)",
+                      cta: "Soft (Offer free value)",
+                      estimated_upvotes: "15-30",
+                      risk_level: "Low (Follows community guidelines)",
+                    },
+                    alternative_versions: [
+                      {
+                        version: "B - More Technical",
+                        text: "Traffic = Content + Backlinks + Time. Here's the formula I use...",
+                        tone: "Expert",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Engagement Tracker",
+                desc: "Analytics",
+                log: "> MONITORING REPLY PERFORMANCE...\n> TRACKING UPVOTES...\n> DETECTING FOLLOW-UP QUESTIONS.",
+                output: {
+                  step_3_engagement_tracking: {
+                    reply_id: "abc123xyz",
+                    posted_at: "2026-02-09T14:45:00Z",
+                    performance_metrics: {
+                      upvotes: 24,
+                      downvotes: 1,
+                      upvote_ratio: 0.96,
+                      replies_received: 3,
+                      profile_visits: 12,
+                      dm_requests: 2,
+                    },
+                    follow_up_questions: [
+                      {
+                        user: "u/frustrated_founder",
+                        question:
+                          "Thanks! What's your process for finding those KD < 20 keywords?",
+                        sentiment: "Grateful",
+                        reply_suggested:
+                          "I use Ahrefs' Content Gap tool. Here's a quick walkthrough...",
+                      },
+                    ],
+                    brand_impact: {
+                      flyrank_mentions_in_thread: 4,
+                      positive_sentiment: "High",
+                      website_referrals: 8,
+                      trial_signups_attributed: 2,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          problem_solver: {
+            desc: "Technical Support Automation",
+            nodes: [
+              {
+                name: "Issue Detector",
+                desc: "Reddit API + NLP",
+                log: "> SCANNING TECH SUBREDDITS...\n> DETECTING PROBLEMS...\n> MATCHING TO KNOWLEDGE BASE.",
+                output: {
+                  step_1_issue_detection: {
+                    subreddits_monitored: [
+                      "r/webdev",
+                      "r/learnprogramming",
+                      "r/sysadmin",
+                      "r/devops",
+                    ],
+                    detected_issues: [
+                      {
+                        thread_id: "tech_001",
+                        title:
+                          "Getting 404 on my API endpoint after deploying to Vercel",
+                        problem_category: "Deployment / Routing",
+                        severity: "Medium",
+                        user_skill_level: "Intermediate",
+                        excerpt:
+                          "Works fine locally. Deployed to Vercel. Now getting 404 on /api/users. What am I missing?",
+                      },
+                    ],
+                    knowledge_base_match: {
+                      doc_id: "KB_VERCEL_ROUTING_001",
+                      title: "Common Vercel API Route Issues",
+                      relevance_score: 0.94,
+                      solution_snippet:
+                        "Vercel requires specific file structure for API routes...",
+                    },
+                  },
+                },
+              },
+              {
+                name: "Solution Generator",
+                desc: "GPT-4 + Docs",
+                log: "> RETRIEVING DOCUMENTATION...\n> GENERATING SOLUTION...\n> FORMATTING CODE EXAMPLES.",
+                output: {
+                  step_2_solution_generation: {
+                    problem: "404 on Vercel API endpoint",
+                    root_cause:
+                      "Incorrect file structure for Vercel serverless functions",
+                    solution: {
+                      explanation:
+                        "Vercel expects API routes in `/pages/api/` or `/app/api/` depending on your Next.js version. Your route needs to be a file, not a folder.",
+                      code_example:
+                        "// ✅ Correct\n// pages/api/users.js\nexport default function handler(req, res) {\n  res.status(200).json({ users: [] });\n}\n\n// ❌ Wrong\n// pages/api/users/index.js (This won't work on Vercel)",
+                      additional_steps: [
+                        "Check your `vercel.json` for custom routing rules",
+                        "Ensure the function is exported as `default`",
+                        "Verify the file extension is `.js` or `.ts`",
+                      ],
+                    },
+                    reply_draft:
+                      "Hey! I ran into this exact issue last week. Vercel is picky about API route structure.\n\nThe problem: Vercel expects `/pages/api/users.js`, not `/pages/api/users/index.js`.\n\nHere's the fix:\n\n```javascript\n// pages/api/users.js\nexport default function handler(req, res) {\n  res.status(200).json({ users: [] });\n}\n```\n\nAlso double-check your `vercel.json` for any custom rewrites that might be interfering.\n\nLet me know if that works!",
+                    tone: "Friendly, Technical, Concise",
+                  },
+                },
+              },
+            ],
+          },
+          trend_seeder: {
+            desc: "Viral Trend Capitalization",
+            nodes: [
+              {
+                name: "Trend Detector",
+                desc: "Google Trends + Reddit",
+                log: "> MONITORING GOOGLE TRENDS...\n> SCANNING REDDIT RISING...\n> ANALYZING VELOCITY...\n> TREND IDENTIFIED.",
+                output: {
+                  step_1_trend_identification: {
+                    detection_timestamp: "2026-02-09T08:00:00Z",
+                    trending_topic: "DeepSeek V3 Open Source Model",
+                    trend_metrics: {
+                      google_search_volume_24h: "+5000%",
+                      reddit_mentions_24h: 847,
+                      twitter_mentions_24h: 12400,
+                      trend_velocity: "Explosive",
+                      estimated_peak: "48-72 hours",
+                    },
+                    audience_analysis: {
+                      primary_audience:
+                        "Developers, AI Enthusiasts, Tech Founders",
+                      sentiment: "Excitement + Skepticism",
+                      common_questions: [
+                        "How does DeepSeek compare to GPT-4?",
+                        "Can I use DeepSeek for commercial projects?",
+                        "What are the API rate limits?",
+                      ],
+                    },
+                    opportunity_score: 9.5,
+                  },
+                },
+              },
+              {
+                name: "Content Angle Generator",
+                desc: "GPT-4o",
+                log: "> ANALYZING TREND CONTEXT...\n> GENERATING UNIQUE ANGLES...\n> OPTIMIZING FOR VIRALITY.",
+                output: {
+                  step_2_angle_generation: {
+                    trend: "DeepSeek V3",
+                    content_angles: [
+                      {
+                        angle:
+                          "How DeepSeek Changes SEO for Bootstrapped Startups",
+                        hook: "You don't need $20/mo ChatGPT anymore",
+                        platform: "Reddit (r/SaaS, r/Entrepreneur)",
+                        format: "Discussion Post",
+                        estimated_engagement: "High",
+                        flyrank_tie_in:
+                          "We integrated DeepSeek into FlyRank yesterday. Here's what we learned...",
+                      },
+                      {
+                        angle:
+                          "I Replaced GPT-4 with DeepSeek for Content Generation. Here's What Happened.",
+                        hook: "Saved $200/mo. Quality actually improved.",
+                        platform: "Twitter Thread",
+                        format: "Case Study Thread",
+                        estimated_engagement: "Very High",
+                      },
+                      {
+                        angle:
+                          "DeepSeek vs GPT-4: The Honest Benchmark for SaaS Founders",
+                        hook: "Tested both on 100 real tasks. Results shocked me.",
+                        platform: "LinkedIn Article",
+                        format: "Long-Form Analysis",
+                        estimated_engagement: "Medium-High",
+                      },
+                    ],
+                    recommended_angle: "Angle 1 (Reddit Discussion)",
+                    timing: "Post within 6 hours for maximum reach",
+                  },
+                },
+              },
+              {
+                name: "Multi-Platform Publisher",
+                desc: "Automation",
+                log: "> DRAFTING CONTENT...\n> SCHEDULING POSTS...\n> MONITORING ENGAGEMENT.",
+                output: {
+                  step_3_publication: {
+                    reddit_post: {
+                      subreddit: "r/SaaS",
+                      title:
+                        "How DeepSeek V3 Changes SEO for Bootstrapped Startups (We integrated it yesterday)",
+                      body: "TL;DR: DeepSeek is GPT-4 quality, but free. We swapped it into FlyRank's content engine. Here's what happened...\n\n**Background**: We've been using GPT-4 for content generation. Costs were $400/mo for API calls.\n\n**The Switch**: Integrated DeepSeek V3 yesterday. Took 2 hours.\n\n**Results**:\n- Quality: Indistinguishable from GPT-4 for blog content\n- Speed: Actually faster (1.2s vs 1.8s avg)\n- Cost: $0 (self-hosted)\n\n**The Catch**: You need to self-host. Not hard, but not Vercel-easy either.\n\nHappy to answer questions. Code is on our GitHub.",
+                      flair: "Discussion",
+                      scheduled_time: "2026-02-09T15:00:00Z",
+                    },
+                    twitter_thread: {
+                      tweet_1:
+                        "We replaced GPT-4 with DeepSeek V3 in our content engine yesterday.\n\nSaved $400/mo. Quality stayed the same.\n\nHere's the honest breakdown 🧵",
+                      tweet_count: 8,
+                      scheduled_time: "2026-02-09T16:00:00Z",
+                    },
+                    linkedin_post: {
+                      title: "DeepSeek vs GPT-4: Real-World Benchmark",
+                      format: "Article",
+                      scheduled_time: "2026-02-10T09:00:00Z",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          reputation: {
+            desc: "Brand Monitoring",
+            nodes: [
+              {
+                name: "Mention Scanner",
+                desc: "Reddit API + Pushshift",
+                log: "> SCANNING FOR BRAND MENTIONS...\n> ANALYZING SENTIMENT...\n> DETECTING ISSUES.",
+                output: {
+                  step_1_sentiment_monitoring: {
+                    brand: "FlyRank",
+                    monitoring_period: "Last 24 hours",
+                    total_mentions: 14,
+                    sentiment_breakdown: {
+                      positive: 10,
+                      neutral: 3,
+                      negative: 1,
+                    },
+                    top_mentions: [
+                      {
+                        type: "positive",
+                        subreddit: "r/SaaS",
+                        author: "u/happy_customer",
+                        text: "Just tried FlyRank and the automation is crazy good. Set up a workflow in 10 mins that used to take me 3 hours.",
+                        upvotes: 18,
+                        url: "reddit.com/r/SaaS/comments/xyz123",
+                      },
+                      {
+                        type: "neutral",
+                        subreddit: "r/Entrepreneur",
+                        author: "u/curious_founder",
+                        text: "Anyone used FlyRank? Considering it for content automation.",
+                        upvotes: 5,
+                        url: "reddit.com/r/Entrepreneur/comments/abc456",
+                      },
+                      {
+                        type: "negative",
+                        subreddit: "r/SideProject",
+                        author: "u/confused_user",
+                        text: "FlyRank pricing page is confusing. Can't tell what's included in the base plan.",
+                        upvotes: 3,
+                        url: "reddit.com/r/SideProject/comments/def789",
+                        requires_action: true,
+                      },
+                    ],
+                    action_items: [
+                      {
+                        priority: "High",
+                        action: "Reply to pricing confusion thread",
+                        suggested_response:
+                          "Hey! Sorry for the confusion. Let me clarify...",
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        },
+        5: {
+          default: {
+            desc: "Visual Discovery Engine",
+            nodes: [
+              {
+                name: "Pinterest SEO Strategist",
+                desc: "Keyword Research",
+                log: "> ANALYZING PINTEREST TRENDS...\n> EXTRACTING LONG-TAIL KEYWORDS...\n> MAPPING TO BOARDS.",
+                output: {
+                  step_1_pinterest_seo: {
+                    campaign_id: "pinterest_home_office_2026_q1",
+                    seed_keyword: "home office setup",
+                    pinterest_metrics: {
+                      monthly_searches: 2400000,
+                      competition: "High",
+                      trending_status: "Rising (+15% MoM)",
+                    },
+                    long_tail_expansion: [
+                      {
+                        keyword: "minimalist desk setup for developers",
+                        monthly_searches: 45000,
+                        competition: "Medium",
+                        opportunity_score: 8.2,
+                      },
+                      {
+                        keyword: "dark mode home office aesthetic 2026",
+                        monthly_searches: 28000,
+                        competition: "Low",
+                        opportunity_score: 9.1,
+                      },
+                      {
+                        keyword: "standing desk cable management ideas",
+                        monthly_searches: 18000,
+                        competition: "Low",
+                        opportunity_score: 8.8,
+                      },
+                      {
+                        keyword: "ergonomic wfh setup under $500",
+                        monthly_searches: 12000,
+                        competition: "Medium",
+                        opportunity_score: 7.5,
+                      },
+                    ],
+                    board_mapping: {
+                      desk_setup_inspiration: {
+                        keywords: ["minimalist", "clean", "aesthetic"],
+                        target_audience: "Remote Workers, Developers",
+                        pin_count_target: 50,
+                      },
+                      tech_gadgets_2026: {
+                        keywords: ["keyboards", "monitors", "webcams"],
+                        target_audience: "Tech Enthusiasts",
+                        pin_count_target: 30,
+                      },
+                      cable_management_hacks: {
+                        keywords: ["organization", "clean setup", "wireless"],
+                        target_audience: "Perfectionists",
+                        pin_count_target: 25,
+                      },
+                    },
+                    seasonal_insights: {
+                      current_season: "Q1 (New Year Resolutions)",
+                      trending_themes: [
+                        "Productivity",
+                        "Minimalism",
+                        "Ergonomics",
+                      ],
+                      recommended_focus: "Productivity-focused setups",
+                    },
+                  },
+                },
+              },
+              {
+                name: "Visual Generator",
+                desc: "Canva API + AI",
+                log: "> GENERATING PIN DESIGNS...\n> APPLYING BRAND COLORS...\n> OPTIMIZING FOR CTR.",
+                output: {
+                  step_2_visual_generation: {
+                    total_pins_generated: 15,
+                    design_templates: [
+                      {
+                        pin_id: "pin_001",
+                        type: "Infographic",
+                        title: "5 Desk Essentials for Developers in 2026",
+                        dimensions: "1000x1500 (2:3 ratio)",
+                        design_elements: {
+                          background_color: "#ffffff",
+                          accent_color: "#3b82f6",
+                          font_primary: "Montserrat Bold",
+                          font_secondary: "Open Sans",
+                          image_overlay: "Minimalist desk photo (stock)",
+                        },
+                        text_overlay:
+                          "5 Must-Have Desk Items\n1. Mechanical Keyboard\n2. Dual Monitors\n3. Standing Desk Mat\n4. Cable Organizer\n5. Desk Lamp",
+                        cta: "Save for Later →",
+                        estimated_ctr: "4.2%",
+                        render_url: "s3://flyrank-pinterest/pins/pin_001.png",
+                      },
+                      {
+                        pin_id: "pin_002",
+                        type: "Lifestyle Photo",
+                        title: "Dark Mode Home Office Aesthetic",
+                        dimensions: "1000x1500",
+                        design_elements: {
+                          background_color: "#121212",
+                          accent_color: "#10b981",
+                          font_primary: "Playfair Display",
+                          image_source: "Unsplash (Dark themed workspace)",
+                        },
+                        text_overlay:
+                          "Dark Mode Workspace Goals\n✨ Minimal Distractions\n✨ Eye-Friendly\n✨ Aesthetic AF",
+                        cta: "Get the Look →",
+                        estimated_ctr: "5.1%",
+                        render_url: "s3://flyrank-pinterest/pins/pin_002.png",
+                      },
+                      {
+                        pin_id: "pin_003",
+                        type: "Before/After",
+                        title: "Cable Management Transformation",
+                        dimensions: "1000x1500",
+                        design_elements: {
+                          layout: "Split Screen (Before | After)",
+                          before_image: "Messy cables",
+                          after_image: "Clean, organized desk",
+                        },
+                        text_overlay:
+                          "From Cable Chaos to Clean Setup\nUsing $15 in Cable Clips",
+                        cta: "See How →",
+                        estimated_ctr: "6.8%",
+                        render_url: "s3://flyrank-pinterest/pins/pin_003.png",
+                      },
+                    ],
+                    a_b_test_variants: {
+                      pin_001_variant_b: {
+                        change:
+                          "Different CTA: 'Tap to Shop' instead of 'Save for Later'",
+                        hypothesis:
+                          "Direct shopping CTA will increase click-through",
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                name: "Scheduler & Optimizer",
+                desc: "Tailwind / Later",
+                log: "> ANALYZING BEST POSTING TIMES...\n> SCHEDULING PINS...\n> OPTIMIZING DESCRIPTIONS.",
+                output: {
+                  step_3_scheduling_optimization: {
+                    platform: "Tailwind",
+                    optimal_posting_times: [
+                      {
+                        day: "Monday",
+                        time: "20:00 EST",
+                        engagement_multiplier: 1.8,
+                      },
+                      {
+                        day: "Wednesday",
+                        time: "15:00 EST",
+                        engagement_multiplier: 1.6,
+                      },
+                      {
+                        day: "Saturday",
+                        time: "10:00 EST",
+                        engagement_multiplier: 2.1,
+                      },
+                    ],
+                    scheduled_pins: [
+                      {
+                        pin_id: "pin_001",
+                        board: "Desk Setup Inspiration",
+                        scheduled_time: "2026-02-10T20:00:00Z",
+                        title: "5 Desk Essentials for Developers in 2026",
+                        description:
+                          "Transform your home office with these must-have items. Perfect for remote developers and tech workers. #homeoffice #desksetup #wfh #productivity #minimalist #developer",
+                        link: "https://flyrank.io/blog/desk-essentials-developers",
+                        hashtags: [
+                          "#homeoffice",
+                          "#desksetup",
+                          "#wfh",
+                          "#productivity",
+                          "#minimalist",
+                        ],
+                      },
+                      {
+                        pin_id: "pin_002",
+                        board: "Dark Mode Aesthetic",
+                        scheduled_time: "2026-02-12T15:00:00Z",
+                        title: "Dark Mode Home Office Aesthetic Goals",
+                        description:
+                          "Create the perfect dark mode workspace. Eye-friendly, distraction-free, and absolutely stunning. #darkmode #homeoffice #aesthetic #workspace #minimalism",
+                        link: "https://flyrank.io/blog/dark-mode-office-setup",
+                      },
+                    ],
+                    seo_optimization: {
+                      keyword_density: "Optimal (2-3%)",
+                      description_length: "150-200 characters",
+                      hashtag_count: "5-7 per pin",
+                      alt_text: "Included for accessibility",
+                    },
+                    performance_prediction: {
+                      estimated_impressions_30d: 45000,
+                      estimated_clicks_30d: 2250,
+                      estimated_saves_30d: 890,
+                      estimated_traffic_to_site: 1800,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          visual_repurposer: {
+            desc: "Content Repurposing",
+            nodes: [
+              {
+                name: "Source Analyzer",
+                desc: "Video Intelligence",
+                log: "> ANALYZING SOURCE VIDEO...\n> EXTRACTING KEY FRAMES...\n> IDENTIFYING VIRAL MOMENTS.",
+                output: {
+                  step_1_source_analysis: {
+                    source_platform: "TikTok",
+                    source_url: "https://tiktok.com/@creator/video/123456",
+                    video_metrics: {
+                      views: 1200000,
+                      likes: 84000,
+                      shares: 12000,
+                      viral_score: 9.2,
+                    },
+                    content_analysis: {
+                      topic: "Desk Setup Tour",
+                      duration: "42s",
+                      key_moments: [
+                        {
+                          timestamp: "0:05",
+                          description: "Hook: 'This setup cost me $300'",
+                          engagement_spike: true,
+                        },
+                        {
+                          timestamp: "0:18",
+                          description: "Reveal: Dual monitor setup",
+                          visual_appeal: "High",
+                        },
+                        {
+                          timestamp: "0:32",
+                          description: "Cable management reveal",
+                          save_worthy: true,
+                        },
+                      ],
+                      dominant_colors: ["#1a1a1a", "#3b82f6", "#ffffff"],
+                      aesthetic: "Dark Mode Minimalist",
+                    },
+                    pinterest_suitability: "Excellent",
+                    repurpose_strategy:
+                      "Extract 3 static pins from key moments",
+                  },
+                },
+              },
+              {
+                name: "Frame Extractor",
+                desc: "FFmpeg",
+                log: "> EXTRACTING FRAMES...\n> REMOVING WATERMARKS...\n> UPSCALING RESOLUTION.",
+                output: {
+                  step_2_frame_extraction: {
+                    extracted_frames: [
+                      {
+                        frame_id: "frame_001",
+                        timestamp: "0:18",
+                        description: "Dual monitor reveal",
+                        resolution: "1920x1080",
+                        upscaled_to: "3000x4500 (Pinterest optimized)",
+                        watermark_removal: "Success",
+                        file_path:
+                          "s3://flyrank-pinterest/extracted/frame_001.png",
+                      },
+                      {
+                        frame_id: "frame_002",
+                        timestamp: "0:32",
+                        description: "Cable management",
+                        resolution: "1920x1080",
+                        upscaled_to: "3000x4500",
+                        file_path:
+                          "s3://flyrank-pinterest/extracted/frame_002.png",
+                      },
+                    ],
+                    enhancement_applied: [
+                      "Sharpening Filter",
+                      "Color Correction",
+                      "Contrast Boost",
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Pinterest Formatter",
+                desc: "Canva API",
+                log: "> ADDING TEXT OVERLAYS...\n> APPLYING BRANDING...\n> GENERATING VARIANTS.",
+                output: {
+                  step_3_pinterest_formatting: {
+                    pin_variants: [
+                      {
+                        variant_id: "var_001",
+                        base_frame: "frame_001",
+                        text_overlay: {
+                          headline: "$300 Dual Monitor Setup",
+                          subheadline: "Budget-Friendly WFH Upgrade",
+                          font: "Montserrat Bold",
+                          color: "#ffffff",
+                          position: "Top Third",
+                        },
+                        branding: {
+                          logo: "Bottom Right Corner",
+                          watermark: "Subtle (10% opacity)",
+                        },
+                        final_url:
+                          "s3://flyrank-pinterest/formatted/var_001.png",
+                      },
+                    ],
+                    metadata: {
+                      title: "$300 Dual Monitor Setup That Looks $3000",
+                      description:
+                        "You don't need to break the bank for a professional home office. Here's how I did it. #budget #homeoffice #dualmonitor #wfh",
+                      link: "https://flyrank.io/blog/budget-dual-monitor-setup",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          promo_overlay: {
+            desc: "Promotional Graphics",
+            nodes: [
+              {
+                name: "Product Image Loader",
+                desc: "Shopify API",
+                log: "> FETCHING PRODUCT IMAGES...\n> ANALYZING COMPOSITION...\n> SELECTING BEST ANGLE.",
+                output: {
+                  step_1_product_image_selection: {
+                    product_id: "prod_desk_lamp_001",
+                    product_name: "Minimalist LED Desk Lamp",
+                    available_images: 6,
+                    selected_image: {
+                      url: "https://cdn.shopify.com/products/desk_lamp_hero.jpg",
+                      resolution: "2000x2000",
+                      background: "White (Clean)",
+                      composition_score: 9.1,
+                      reason: "Best lighting, clear product focus",
+                    },
+                  },
+                },
+              },
+              {
+                name: "Overlay Designer",
+                desc: "Dynamic Graphics",
+                log: "> GENERATING OVERLAY...\n> CHECKING CONTRAST...\n> OPTIMIZING READABILITY.",
+                output: {
+                  step_2_dynamic_overlay: {
+                    base_image: "desk_lamp_hero.jpg",
+                    overlay_elements: [
+                      {
+                        type: "text",
+                        content: "FLASH SALE",
+                        font: "Impact",
+                        size: "72px",
+                        color: "#ff0000",
+                        position: "Top Center",
+                        effect: "Drop Shadow",
+                      },
+                      {
+                        type: "text",
+                        content: "50% OFF",
+                        font: "Montserrat Bold",
+                        size: "96px",
+                        color: "#ffffff",
+                        stroke: "#000000 (3px)",
+                        position: "Center",
+                        effect: "Glow",
+                      },
+                      {
+                        type: "badge",
+                        content: "Limited Time",
+                        style: "Ribbon",
+                        color: "#fbbf24",
+                        position: "Top Left Corner",
+                      },
+                    ],
+                    contrast_check: {
+                      wcag_aa_compliant: true,
+                      readability_score: 9.4,
+                    },
+                    final_output:
+                      "s3://flyrank-pinterest/promo/flash_sale_lamp.png",
+                  },
+                },
+              },
+            ],
+          },
+          trend_scraper: {
+            desc: "Visual Trend Analysis",
+            nodes: [
+              {
+                name: "Pinterest Trends API",
+                desc: "Data Collection",
+                log: "> FETCHING TRENDING PINS...\n> ANALYZING VISUAL PATTERNS...\n> EXTRACTING COLOR PALETTES.",
+                output: {
+                  step_1_visual_trend_analysis: {
+                    keyword: "living room decor 2026",
+                    analysis_period: "Last 30 days",
+                    top_pins_analyzed: 100,
+                    visual_insights: {
+                      dominant_colors: [
+                        { hex: "#f5f5dc", name: "Beige", frequency: "42%" },
+                        { hex: "#2f4f4f", name: "Charcoal", frequency: "28%" },
+                        {
+                          hex: "#8b7355",
+                          name: "Warm Brown",
+                          frequency: "18%",
+                        },
+                      ],
+                      trending_elements: [
+                        { element: "Curved Furniture", growth: "+45%" },
+                        { element: "Indoor Plants (Large)", growth: "+38%" },
+                        { element: "Geometric Rugs", growth: "+32%" },
+                        { element: "Brass Accents", growth: "+28%" },
+                      ],
+                      style_trends: [
+                        {
+                          style: "Japandi (Japanese + Scandinavian)",
+                          popularity: "Rising",
+                        },
+                        { style: "Maximalism", popularity: "Declining" },
+                        { style: "Organic Modern", popularity: "Stable High" },
+                      ],
+                    },
+                    actionable_insights: {
+                      recommended_color_palette: [
+                        "#f5f5dc",
+                        "#2f4f4f",
+                        "#8b7355",
+                      ],
+                      recommended_keywords: [
+                        "curved sofa",
+                        "japandi living room",
+                        "organic modern decor",
+                      ],
+                      content_opportunity:
+                        "Create pins featuring curved furniture + indoor plants in beige/charcoal palette",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      // ... rest of the script ...
+      // (Lines 911-1040 remain unchanged, just closing the loop logic)
+
+      const state = {
+        1: "default",
+        2: "default",
+        3: "default",
+        4: "default",
+        5: "default",
+      };
+      let globalState = {};
+
+      function updateMission(engineId, missionKey) {
+        state[engineId] = missionKey;
+        const data = missions[engineId][missionKey];
+        document.getElementById(`desc-${engineId}`).innerText = data.desc;
+        const listEl = document.getElementById(`nodes-${engineId}`);
+        listEl.innerHTML = "";
+        data.nodes.forEach((node) => {
+          const li = document.createElement("li");
+          li.onclick = () => simulateNode(engineId, node);
+          li.innerHTML = `<span class="node-name">${node.name}</span><span class="node-desc">${node.desc}</span>`;
+          listEl.appendChild(li);
+        });
+        document.getElementById(`terminal-${engineId}`).innerHTML =
+          "Select a node...";
+      }
+
+      function typeWriter(elementId, text, cb) {
+        const element = document.getElementById(elementId);
+        element.innerHTML = "";
+        let i = 0;
+        function type() {
+          if (i < text.length) {
+            const char = text.charAt(i);
+            element.innerHTML += char === "\n" ? "<br>" : char;
+            i++;
+            element.scrollTop = element.scrollHeight;
+            setTimeout(type, 5);
+          } else {
+            element.innerHTML +=
+              '<br><span class="status-success">> DONE</span>';
+            if (cb) cb();
+          }
+        }
+        type();
+      }
+
+      function updateGlobalSidebar(newData) {
+        globalState = { ...globalState, ...newData };
+        const codeEl = document.getElementById("global-json");
+        const jsonStr = JSON.stringify(globalState, null, 2);
+        codeEl.innerHTML = Prism.highlight(
+          jsonStr,
+          Prism.languages.json,
+          "json",
+        );
+        const sidebar = document.querySelector(".global-sidebar");
+        sidebar.style.borderColor = "#3b82f6";
+        setTimeout(() => {
+          sidebar.style.borderColor = "rgba(255, 255, 255, 0.08)";
+        }, 300);
+      }
+
+      function simulateNode(engineId, nodeData) {
+        document.getElementById(`status-${engineId}`).innerText = "RUNNING...";
+        document.getElementById(`status-${engineId}`).className =
+          "status-running";
+        typeWriter(`terminal-${engineId}`, nodeData.log, () => {
+          document.getElementById(`status-${engineId}`).innerText = "IDLE";
+          document.getElementById(`status-${engineId}`).className =
+            "status-success";
+        });
+        updateGlobalSidebar(nodeData.output);
+      }
+
+      function runFullSimulation(engineId) {
+        globalState = {};
+        document.getElementById("global-json").innerHTML =
+          "// Workflow initializing...";
+        document.getElementById("global-scope").innerText =
+          `ENGINE ${engineId}`;
+        document.getElementById("global-status").innerText = "RUNNING...";
+        document.getElementById("global-status").className = "status-running";
+        const terminalEl = document.getElementById(`terminal-${engineId}`);
+        terminalEl.innerHTML = "> INITIALIZING WORKFLOW...\n";
+        document.getElementById(`status-${engineId}`).innerText =
+          "ORCHESTRATING...";
+        document.getElementById(`status-${engineId}`).className =
+          "status-running";
+        const currentNodes = missions[engineId][state[engineId]].nodes;
+        let delay = 500;
+        currentNodes.forEach((node, index) => {
+          setTimeout(() => {
+            terminalEl.innerHTML += `> STEP ${index + 1}: ${node.name}...\n`;
+            terminalEl.scrollTop = terminalEl.scrollHeight;
+            updateGlobalSidebar(node.output);
+          }, delay);
+          delay += 1200;
+        });
+        setTimeout(() => {
+          terminalEl.innerHTML += "> WORKFLOW COMPLETED.";
+          document.getElementById(`status-${engineId}`).innerText = "IDLE";
+          document.getElementById(`status-${engineId}`).className =
+            "status-success";
+          document.getElementById("global-status").innerText = "COMPLETE";
+          document.getElementById("global-status").className = "status-success";
+        }, delay + 500);
+      }
+
+      window.onload = () => {
+        for (let i = 1; i <= 5; i++) updateMission(i, "default");
+        updateSchemaMissions();
+      };
+
+      // PAGE SWITCHING FUNCTION
+      function switchPage(pageName, tabElement) {
+        // Hide all pages
+        document.querySelectorAll(".page-section").forEach((page) => {
+          page.classList.remove("active");
+        });
+
+        // Remove active from all tabs
+        document.querySelectorAll(".nav-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Show selected page
+        document.getElementById(`${pageName}-page`).classList.add("active");
+
+        // Activate clicked tab
+        if (tabElement) {
+          tabElement.classList.add("active");
+        } else {
+          // Find tab by name if element not passed
+          const tabs = document.querySelectorAll(".nav-tab");
+          tabs.forEach((t) => {
+            if (t.innerText.toLowerCase().includes(pageName.toLowerCase())) {
+              t.classList.add("active");
+            }
+          });
+        }
+      }
+
+      function openWorkflowSchema(engineId, missionKey) {
+        switchPage("workflows");
+        document.getElementById("schema-engine-select").value = engineId;
+        updateSchemaMissions();
+        document.getElementById("schema-mission-select").value = missionKey;
+        showMissionWorkflow(engineId, missionKey);
+      }
+
+      function updateSchemaMissions() {
+        const engineId = document.getElementById("schema-engine-select").value;
+        const missionSelect = document.getElementById("schema-mission-select");
+        missionSelect.innerHTML = "";
+
+        const engineData = missions[engineId];
+        for (const key in engineData) {
+          const option = document.createElement("option");
+          option.value = key;
+          option.innerText = key.replace(/_/g, " ").toUpperCase();
+          missionSelect.appendChild(option);
+        }
+
+        // Trigger first one
+        const firstMission = Object.keys(engineData)[0];
+        showMissionWorkflow(engineId, firstMission);
+      }
+
+      // WORKFLOW SWITCHING FUNCTION
+      function showMissionWorkflow(engineId, missionKey) {
+        const schemaView = document.getElementById("schema-view");
+        schemaView.innerHTML = "";
+
+        const missionData = missions[engineId][missionKey];
+        if (!missionData) return;
+
+        // 1. START NODE
+        const startNode = document.createElement("div");
+        startNode.className = "flow-node start";
+        startNode.innerHTML = "START";
+        schemaView.appendChild(startNode);
+
+        const firstLine = document.createElement("div");
+        firstLine.className = "flow-line";
+        schemaView.appendChild(firstLine);
+
+        // 2. MISSION AGENTS
+        missionData.nodes.forEach((node, index) => {
+          const nodeEl = document.createElement("div");
+          nodeEl.className = "flow-node";
+          nodeEl.onclick = (e) => {
+            document
+              .querySelectorAll(".flow-node")
+              .forEach((n) => n.classList.remove("active"));
+            nodeEl.classList.add("active");
+            inspectNode(node);
+          };
+
+          nodeEl.innerHTML = `
+            <div class="node-step-tag">AGENT 0${index + 1}</div>
+            <div class="node-label">${node.name}</div>
+          `;
+
+          schemaView.appendChild(nodeEl);
+
+          // Add arrow/line
+          const line = document.createElement("div");
+          line.className = "flow-line";
+          schemaView.appendChild(line);
+
+          // Optional: Add a decision node for Engine 1 to match the "wow" factor
+          if (engineId == 1 && index === 0) {
+            const decision = document.createElement("div");
+            decision.className = "flow-node decision";
+            decision.innerHTML = `<div class="node-label">DATA<br>VALID?</div>`;
+            schemaView.appendChild(decision);
+
+            const dLine = document.createElement("div");
+            dLine.className = "flow-line";
+            schemaView.appendChild(dLine);
+          }
+        });
+
+        // 3. END NODE
+        const endNode = document.createElement("div");
+        endNode.className = "flow-node end";
+        endNode.innerHTML = "MISSION COMPLETE";
+        schemaView.appendChild(endNode);
+
+        // Reset Inspector
+        document.getElementById("inspector-welcome").style.display = "block";
+        document.getElementById("inspector-data").style.display = "none";
+      }
+
+      function inspectNode(node) {
+        const welcome = document.getElementById("inspector-welcome");
+        const data = document.getElementById("inspector-data");
+        const nameEl = document.getElementById("inspect-name");
+        const descEl = document.getElementById("inspect-desc");
+        const outputEl = document.getElementById("inspect-output");
+
+        welcome.style.display = "none";
+        data.style.display = "block";
+
+        nameEl.innerText = node.name;
+        descEl.innerText = node.desc;
+
+        const jsonStr = JSON.stringify(node.output, null, 2);
+        outputEl.innerHTML = Prism.highlight(
+          jsonStr,
+          Prism.languages.json,
+          "json",
+        );
+      }
+    </script>
+  </body>
+</html>
