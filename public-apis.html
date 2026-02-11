@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Master API Portal · 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    :root { --ink: #151515; --paper: #f6f3ee; --accent: #1f6feb; }
+    body { font-family: 'Space Grotesk', sans-serif; color: var(--ink); background: radial-gradient(1200px 600px at 15% 0%, #fff7ef 0%, transparent 60%), radial-gradient(1000px 500px at 90% 10%, #eaf4ff 0%, transparent 60%), var(--paper); min-height: 100vh; scroll-behavior: smooth; }
+    h1, h2, h3 { font-family: 'Fraunces', serif; letter-spacing: -0.02em; }
+    .glass { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.75); }
+    .card { border: 1px solid rgba(21, 21, 21, 0.08); background: white; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar-btn.active { background: var(--ink); color: white; font-weight: 600; }
+    .view-btn.active { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: rgba(0,0,0,0.1); }
+    .slide-content { transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.5s ease; }
+    .nav-arrow { transition: all 0.2s ease; background: white; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 999px; cursor: pointer; }
+    .nav-arrow:hover { background: var(--ink); color: white; transform: scale(1.1); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: #c8bfb5; border-radius: 999px; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <header class="sticky top-0 z-50 glass border-b border-black/10 h-20">
+    <div class="max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center font-bold text-lg">LEO</div>
+        <div class="text-xl font-bold tracking-tight">API Index</div>
+      </div>
+      <nav class="flex items-center gap-8 text-sm font-semibold text-black/60">
+        <a href="#home">Home</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#directory" class="px-6 py-3 rounded-full bg-black text-white">Explore Directory</a>
+      </nav>
+    </div>
+  </header>
+
+  <section id="home" class="max-w-7xl mx-auto px-6 pt-24 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <div class="space-y-6">
+      <span class="inline-flex px-4 py-1 rounded-full bg-white border border-black/10 text-[10px] font-bold uppercase tracking-[0.2em]">Live Repository Index</span>
+      <h1 class="text-7xl font-semibold leading-[1.1]">The Master <br/><span class="text-blue-600">Directory.</span></h1>
+      <p class="text-xl text-black/50 leading-relaxed">Browsing 1,400+ public endpoints. Use the horizontal slide below to discover categories.</p>
+      <button onclick="location.href='#directory'" class="px-8 py-4 rounded-full bg-black text-white font-bold hover:scale-105 transition-transform shadow-xl">Get Started</button>
+    </div>
+
+    <div class="flex flex-col items-center">
+      <div class="relative w-full max-w-[420px]">
+        <div class="p-12 rounded-[60px] card flex flex-col justify-center items-center text-center h-[380px] relative overflow-hidden bg-white shadow-2xl border-none">
+          <div id="slideInner" class="slide-content w-full">
+            <div class="text-[10px] font-black uppercase text-blue-500 tracking-[0.4em] mb-4">Trending Category</div>
+            <div id="slideValue" class="text-4xl font-bold leading-tight min-h-[100px] flex items-center justify-center">Loading...</div>
+            <div id="slideMeta" class="text-xs font-bold text-black/30 mt-6 tracking-widest uppercase">Fetching Live Data</div>
+          </div>
+        </div>
+        <div class="flex justify-center gap-4 mt-8">
+            <button onclick="prevSlide()" class="nav-arrow shadow-md"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" /></svg></button>
+            <button onclick="nextSlide()" class="nav-arrow shadow-md"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="dashboard" class="max-w-7xl mx-auto px-6 py-20 border-t border-black/5">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="p-10 rounded-[40px] card">
+        <h3 class="text-sm font-black uppercase tracking-widest text-black/20 mb-8 text-center">Auth Method Distribution</h3>
+        <div class="relative h-[280px]"><canvas id="authChart"></canvas></div>
+      </div>
+      <div class="p-10 rounded-[40px] card flex flex-col justify-center items-center text-center">
+        <div class="text-[100px] font-black text-blue-600 leading-none" id="httpsStat">...</div>
+        <div class="text-[10px] font-bold uppercase tracking-[0.4em] text-black/30 mt-6">HTTPS Adoption Rate</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="directory" class="max-w-[1700px] mx-auto px-6 py-10">
+    <div class="flex flex-col lg:flex-row rounded-[40px] border border-black/10 overflow-hidden bg-white/40 backdrop-blur-xl h-[850px] shadow-2xl">
+      <aside class="w-72 overflow-y-auto p-8 border-r border-black/5 bg-white/40">
+        <h3 class="text-[10px] font-black uppercase text-black/30 mb-8">Categories</h3>
+        <nav id="catList" class="space-y-1"></nav>
+      </aside>
+
+      <div class="flex-1 flex flex-col min-w-0">
+        <div class="p-6 border-b border-black/5 flex flex-wrap gap-4 items-center bg-white/60">
+          <input type="text" id="apiSearch" placeholder="Search name, description, or auth..." class="flex-1 min-w-[300px] bg-white border border-black/10 rounded-full px-6 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
+          <div class="flex bg-black/5 p-1 rounded-full">
+            <button onclick="setView('grid')" id="btnGrid" class="view-btn active px-5 py-2 rounded-full text-[10px] font-bold uppercase">Grid</button>
+            <button onclick="setView('table')" id="btnTable" class="view-btn px-5 py-2 rounded-full text-[10px] font-bold uppercase">Table</button>
+          </div>
+          <div id="resultMeta" class="px-6 py-2 bg-black text-white text-[10px] font-bold rounded-full uppercase">0 Results</div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-8 bg-black/[0.01]">
+          <div id="gridView" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 h-fit"></div>
+          <div id="tableView" class="hidden rounded-3xl border border-black/5 bg-white overflow-hidden">
+            <table class="w-full text-left">
+              <thead class="bg-black/5 text-[10px] uppercase font-bold text-black/40">
+                <tr><th class="p-5">API Name</th><th class="p-5">Category</th><th class="p-5">Auth</th><th class="p-5 text-center">HTTPS</th><th class="p-5 text-center">CORS</th><th class="p-5 text-right">Docs</th></tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+          <div id="emptyView" class="hidden py-40 text-center opacity-30 italic font-bold">No results found.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    let db = [];
+    let currentCat = 'All';
+    let categories = [];
+    let slideIndex = 0;
+    let slideInterval;
+
+    // FETCH DIRECTLY FROM PUBLIC SHEET LINK
+    const sheetURL = "https://docs.google.com/spreadsheets/d/1-vMkmec22fUXp9dUrEO37uBImErrUgXDDHrqFIPlmhw/export?format=csv";
+
+    Papa.parse(sheetURL, {
+      download: true, header: true, skipEmptyLines: true,
+      complete: function(res) {
+        // Clean data fields [cite: 4, 7]
+        db = res.data.map(r => ({
+          api: r.api || r['api name'] || "Unknown API",
+          category: r.category || "General",
+          description: r.description || "No description provided.",
+          url: r.url || "#",
+          auth: r.auth || "No",
+          https: r.https || "No",
+          cors: r.cors || "No"
+        })).filter(x => x.api !== "Unknown API");
+
+        categories = [...new Set(db.map(x => x.category))].sort();
+        initPortal();
+        startAutoSlide();
+      }
+    });
+
+    function initPortal() {
+      const cats = ['All', ...categories];
+      document.getElementById('catList').innerHTML = cats.map(c => `
+        <button onclick="setCategory('${c}')" class="sidebar-btn ${currentCat === c ? 'active' : ''} w-full text-left px-4 py-2 rounded-xl text-sm transition-all hover:bg-black/5">${c}</button>`).join('');
+      document.getElementById('httpsStat').innerText = Math.round((db.filter(x => x.https === 'Yes').length / db.length) * 100) + "%";
+      initCharts();
+      render();
+    }
+
+    function updateSlide(dir) {
+      const inner = document.getElementById('slideInner');
+      inner.style.opacity = "0";
+      inner.style.transform = dir === 'next' ? "translateX(-40px)" : "translateX(40px)";
+      setTimeout(() => {
+        const cat = categories[slideIndex % categories.length];
+        document.getElementById('slideValue').innerText = cat;
+        document.getElementById('slideMeta').innerText = `${db.filter(x => x.category === cat).length} Available APIs`;
+        inner.style.transition = "none";
+        inner.style.transform = dir === 'next' ? "translateX(40px)" : "translateX(-40px)";
+        setTimeout(() => {
+          inner.style.transition = "transform 0.7s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.5s ease";
+          inner.style.opacity = "1";
+          inner.style.transform = "translateX(0)";
+        }, 50);
+      }, 350);
+    }
+
+    function startAutoSlide() { slideInterval = setInterval(() => { slideIndex++; updateSlide('next'); }, 4500); }
+    function nextSlide() { clearInterval(slideInterval); slideIndex++; updateSlide('next'); startAutoSlide(); }
+    function prevSlide() { clearInterval(slideInterval); slideIndex = (slideIndex > 0) ? slideIndex - 1 : categories.length - 1; updateSlide('prev'); startAutoSlide(); }
+
+    function render() {
+      const q = document.getElementById('apiSearch').value.toLowerCase();
+      const filtered = db.filter(x => (currentCat === 'All' || x.category === currentCat) && (x.api.toLowerCase().includes(q) || x.description.toLowerCase().includes(q)));
+      document.getElementById('resultMeta').innerText = `${filtered.length} APIs`;
+
+      document.getElementById('gridView').innerHTML = filtered.map(x => `
+        <div class="p-6 rounded-[32px] card flex flex-col justify-between h-full">
+          <div><div class="flex justify-between items-center mb-4"><span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase">${x.category}</span><div>${x.https === 'Yes' ? '🔒' : ''}</div></div>
+          <h3 class="text-xl font-bold mb-2">${x.api}</h3><p class="text-xs text-black/50 leading-relaxed mb-8">${x.description}</p></div>
+          <div class="pt-4 border-t border-black/5 flex items-center justify-between"><span class="text-[9px] font-bold text-black/20 uppercase">Auth: ${x.auth}</span><a href="${x.url}" target="_blank" class="text-xs font-black hover:text-blue-600">DOCS ↗</a></div>
+        </div>`).join('');
+
+      document.getElementById('tableBody').innerHTML = filtered.map(x => `
+        <tr class="hover:bg-black/[0.02] border-b border-black/5 transition-colors"><td class="p-5 font-bold text-sm">${x.api}</td><td class="p-5 text-[10px] font-bold text-black/40 uppercase">${x.category}</td><td class="p-5 text-[10px] font-bold">${x.auth}</td><td class="p-5 text-center">${x.https === 'Yes' ? '✅' : '❌'}</td><td class="p-5 text-center">${x.cors === 'Yes' ? '✅' : '❌'}</td><td class="p-5 text-right"><a href="${x.url}" target="_blank" class="text-blue-600 font-bold text-xs underline">DOCS</a></td></tr>`).join('');
+      document.getElementById('emptyView').classList.toggle('hidden', filtered.length > 0);
+    }
+
+    function setView(v) { 
+        document.getElementById('btnGrid').classList.toggle('active', v === 'grid'); 
+        document.getElementById('btnTable').classList.toggle('active', v === 'table'); 
+        document.getElementById('gridView').classList.toggle('hidden', v === 'table'); 
+        document.getElementById('tableView').classList.toggle('hidden', v === 'grid'); 
+    }
+    function setCategory(c) { currentCat = c; document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.toggle('active', b.innerText.trim() === c)); render(); }
+    function initCharts() {
+      const authMap = db.reduce((a, b) => { a[b.auth] = (a[b.auth] || 0) + 1; return a; }, {});
+      new Chart(document.getElementById('authChart'), { type: 'doughnut', data: { labels: Object.keys(authMap), datasets: [{ data: Object.values(authMap), backgroundColor: ['#1f6feb', '#8a63d2', '#f28b32', '#cbd5e1'], borderWidth: 0 }] }, options: { maintainAspectRatio: false, cutout: '82%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 10, weight: 'bold' } } } } } });
+    }
+    document.getElementById('apiSearch').addEventListener('input', render);
+  </script>
+</body>
+</html>
