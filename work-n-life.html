@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Work'n Life — Sarajevo's first full-life co-working space." />
+  <title>Work'n Life — Sarajevo</title>
+  <script>
+    (() => {
+      const key = 'wnl-theme';
+      const saved = localStorage.getItem(key);
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+/* ============================================
+   WORK'N LIFE — Main Stylesheet
+   Sarajevo, Bosnia & Herzegovina — 2026
+   ============================================ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#080808;--bg2:#0e0e0e;--bg3:#141414;--bg4:#1c1c1c;
+  --line:#2a2a2a;--line2:#333333;
+  --accent:#e8c87a;--accent2:#f0d898;
+  --white:#f4f0eb;--white2:#c8c4be;--white3:#7a7672;
+  --nav-bg:rgba(8,8,8,0.95);--on-accent:#080808;--on-accent-muted:rgba(8,8,8,0.7);
+  --gallery-overlay:linear-gradient(to top,rgba(8,8,8,0.9) 0%,transparent 45%);
+  --field-placeholder:#333333;
+  --form-success-bg:#2a5a3a;--form-success-text:#a8d8b8;
+  --form-error-bg:#333333;
+  --font-display:'Cormorant Garamond',serif;
+  --font-ui:'Syne',sans-serif;
+}
+[data-theme="light"]{
+  --bg:#fcfcfb;--bg2:#f5f5f3;--bg3:#efefed;--bg4:#e7e7e3;
+  --line:#d9d9d4;--line2:#c4c4bd;
+  --accent:#9d6f2f;--accent2:#b7853f;
+  --white:#1e1c19;--white2:#4a4640;--white3:#726c64;
+  --nav-bg:rgba(252,252,251,0.93);--on-accent:#fffdf9;--on-accent-muted:rgba(255,253,249,0.84);
+  --gallery-overlay:linear-gradient(to top,rgba(22,18,13,0.72) 0%,transparent 45%);
+  --field-placeholder:#8d8880;
+  --form-success-bg:#2f6a4b;--form-success-text:#dcf3e3;
+  --form-error-bg:#8a8a85;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--white);overflow-x:hidden;cursor:default}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+
+/* CURSOR */
+.cursor{width:6px;height:6px;border-radius:50%;background:var(--accent);position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.15s,opacity 0.15s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 3vw;height:60px;border-bottom:1px solid var(--line);background:var(--nav-bg);backdrop-filter:blur(20px)}
+.nav-actions{display:flex;align-items:center;gap:1rem}
+.nav-logo{font-family:var(--font-ui);font-size:0.85rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--white);display:flex;align-items:center;gap:6px}
+.nav-logo-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-switcher-wrap{overflow:hidden;height:1.1em;display:inline-block;vertical-align:bottom}
+.nav-switcher-track{display:flex;flex-direction:column;animation:switchWords 10s ease-in-out infinite}
+.nav-word{height:1.1em;display:flex;align-items:center;color:var(--accent);white-space:nowrap}
+@keyframes switchWords{0%,11%{transform:translateY(0)}14%,25%{transform:translateY(-1.1em)}28%,39%{transform:translateY(-2.2em)}42%,53%{transform:translateY(-3.3em)}56%,67%{transform:translateY(-4.4em)}70%,81%{transform:translateY(-5.5em)}84%,95%{transform:translateY(-6.6em)}98%,100%{transform:translateY(0)}}
+.nav-links{display:flex;gap:2.5rem;align-items:center}
+.nav-links a{font-size:0.72rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--white3);transition:color 0.2s}
+.nav-links a:hover{color:var(--accent)}
+.nav-cta{padding:0.5rem 1.2rem;border:1px solid var(--accent);color:var(--accent)!important;transition:background 0.2s,color 0.2s!important}
+.nav-cta:hover{background:var(--accent)!important;color:var(--bg)!important}
+.theme-toggle{height:34px;min-width:82px;border:1px solid var(--line2);background:var(--bg2);color:var(--white2);display:inline-flex;align-items:center;justify-content:center;padding:0 0.9rem;font-size:0.62rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:border-color 0.2s,color 0.2s,background 0.2s}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* HERO */
+.hero{height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
+.hero-left{display:flex;flex-direction:column;justify-content:flex-end;padding:0 4vw 8vh;border-right:1px solid var(--line);position:relative;z-index:2}
+.hero-right{display:flex;flex-direction:column;justify-content:space-between;padding:18vh 4vw 8vh;position:relative}
+.hero-number{font-family:var(--font-display);font-size:clamp(8rem,18vw,18rem);font-weight:300;color:var(--line2);line-height:0.85;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none;white-space:nowrap;letter-spacing:-0.05em}
+.hero-eyebrow{font-size:0.7rem;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;color:var(--white3);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.8rem}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--white3)}
+.hero-biglogo{position:relative;z-index:2;display:block;line-height:1;white-space:nowrap;--hero-word-size:clamp(4rem,8vw,7.5rem)}
+.hero-biglogo-work{font-family:var(--font-display);font-size:var(--hero-word-size);font-weight:300;color:var(--white);line-height:1;display:inline-block;vertical-align:bottom}
+.hero-biglogo-n{color:var(--accent)}
+.hero-biglogo-switcher{display:inline-block;vertical-align:baseline;position:relative;top:0.045em;min-width:6ch}
+.hero-biglogo-word{font-family:var(--font-display);font-size:var(--hero-word-size);font-weight:300;font-style:italic;color:var(--accent);display:inline-block;white-space:nowrap;line-height:1;transition:opacity 0.24s ease}
+.hero-biglogo-word.is-fading{opacity:0}
+.hero-tagline{font-family:var(--font-display);font-size:clamp(1.1rem,2vw,1.4rem);font-style:italic;color:var(--white2);margin-top:1.5rem;font-weight:300;line-height:1.5}
+.hero-meta{display:flex;flex-direction:column;gap:2rem;z-index:2}
+.hero-stat-row{display:flex;flex-direction:column;gap:0.2rem}
+.hero-stat-val{font-family:var(--font-display);font-size:3.5rem;font-weight:300;color:var(--accent);line-height:1}
+.hero-stat-key{font-size:0.7rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--white3)}
+.hero-bottom{display:flex;align-items:center;justify-content:space-between;z-index:2}
+.hero-loc{font-size:0.7rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--white3)}
+.hero-scroll{font-size:0.65rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--white3);display:flex;align-items:center;gap:0.6rem;cursor:pointer}
+.hero-scroll-line{width:40px;height:1px;background:var(--white3)}
+
+/* MARQUEE */
+.marquee-strip{background:var(--accent);padding:0.8rem 0;overflow:hidden;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+.marquee-inner{display:flex;gap:4rem;animation:marquee 18s linear infinite;white-space:nowrap;width:max-content}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.marquee-item{font-family:var(--font-ui);font-size:0.75rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--bg);display:flex;align-items:center;gap:1.5rem}
+.marquee-dot{width:4px;height:4px;border-radius:50%;background:var(--bg);opacity:0.5}
+
+/* SHARED */
+.sec-num{font-family:var(--font-display);font-size:0.8rem;font-weight:400;color:var(--white3);letter-spacing:0.2em}
+
+/* PHILOSOPHY */
+.philosophy{display:grid;grid-template-columns:1fr 1fr;min-height:90vh;border-bottom:1px solid var(--line)}
+.philo-left{padding:10vh 4vw;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between}
+.philo-right{padding:10vh 4vw;background:var(--bg2);display:flex;flex-direction:column;gap:2rem}
+.big-quote{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.5rem);font-weight:300;line-height:1.2;color:var(--white)}
+.big-quote em{font-style:italic;color:var(--accent)}
+.body-text{font-family:var(--font-display);font-size:1.2rem;font-weight:300;line-height:1.9;color:var(--white2);max-width:480px}
+.values-list{display:flex;flex-direction:column}
+.value-row{display:flex;align-items:flex-start;gap:2rem;padding:2rem 0;border-bottom:1px solid var(--line)}
+.value-row:first-child{border-top:1px solid var(--line)}
+.value-idx{font-family:var(--font-display);font-size:0.9rem;color:var(--white3);min-width:24px;padding-top:0.1rem}
+.value-name{font-size:0.8rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--white);margin-bottom:0.4rem}
+.value-desc{font-family:var(--font-display);font-size:1.05rem;font-weight:300;color:var(--white3);line-height:1.6}
+
+/* SPACE */
+.space-section{border-bottom:1px solid var(--line)}
+.space-header{display:flex;align-items:flex-end;justify-content:space-between;padding:8vh 4vw 4vh;border-bottom:1px solid var(--line)}
+.space-title{font-family:var(--font-display);font-size:clamp(3rem,6vw,5rem);font-weight:300;color:var(--white);line-height:1}
+.space-title em{font-style:italic;color:var(--accent)}
+.space-sub{font-size:0.72rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--white3);max-width:200px;text-align:left;line-height:1.6}
+.zone-row{display:grid;grid-template-columns:80px 1fr 1fr auto;align-items:start;gap:2rem;padding:2rem 4vw;border-bottom:1px solid var(--line);transition:background 0.2s;cursor:default}
+.zone-row:hover{background:var(--bg2)}
+.zone-n{font-family:var(--font-display);font-size:2.5rem;font-weight:300;color:var(--line2);line-height:1;transition:color 0.2s}
+.zone-row:hover .zone-n{color:var(--accent)}
+.zone-title{font-size:0.85rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--white)}
+.zone-desc{font-family:var(--font-display);font-size:1rem;font-weight:300;color:var(--white3);line-height:1.5;padding-left:0.18em;overflow:hidden}
+.zone-badge{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.3rem 0.8rem;border:1px solid var(--line2);color:var(--white3);white-space:nowrap;transition:border-color 0.2s,color 0.2s;align-self:start}
+.zone-row:hover .zone-badge{border-color:var(--accent);color:var(--accent)}
+
+/* MEMBERSHIP */
+.membership-section{border-bottom:1px solid var(--line)}
+.membership-header{padding:8vh 4vw 6vh;border-bottom:1px solid var(--line);display:flex;align-items:flex-end;gap:4rem}
+.membership-title{font-family:var(--font-display);font-size:clamp(3rem,6vw,5rem);font-weight:300;color:var(--white);line-height:1}
+.membership-title em{font-style:italic;color:var(--accent)}
+.membership-note{font-family:var(--font-display);font-size:1.1rem;font-weight:300;font-style:italic;color:var(--white3);max-width:320px;line-height:1.7;padding-bottom:0.3rem}
+.plans-container{display:grid;grid-template-columns:repeat(5,1fr)}
+.plan{padding:3rem 2rem;border-right:1px solid var(--line);display:flex;flex-direction:column;transition:background 0.3s;position:relative;overflow:hidden}
+.plan:last-child{border-right:none}
+.plan:hover{background:var(--bg2)}
+.plan.featured{background:var(--accent)}
+.plan.featured:hover{background:var(--accent2)}
+.plan.featured .plan-name{color:var(--on-accent)}
+.plan.featured .plan-tag{color:var(--on-accent);opacity:0.6}
+.plan.featured .plan-desc{color:var(--on-accent-muted)}
+.plan.featured .plan-feat{color:var(--on-accent);border-color:color-mix(in srgb,var(--on-accent) 18%,transparent)}
+.plan.featured .plan-feat::before{background:var(--on-accent)}
+.plan-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--white3);margin-bottom:2rem}
+.plan-name{font-family:var(--font-display);font-size:1.8rem;font-weight:300;color:var(--white);margin-bottom:0.5rem;line-height:1.1}
+.plan-desc{font-family:var(--font-display);font-size:0.95rem;font-weight:300;color:var(--white3);line-height:1.6;margin-bottom:auto;padding-bottom:2rem}
+.plan-feats{list-style:none;display:flex;flex-direction:column;margin-top:auto}
+.plan-feat{font-size:0.78rem;font-weight:400;color:var(--white2);padding:0.6rem 0;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:0.6rem}
+.plan-feat::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* COMMUNITY */
+.community-section{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.comm-left{padding:10vh 4vw;border-right:1px solid var(--line)}
+.comm-right{padding:10vh 4vw;background:var(--bg2);display:flex;flex-direction:column;justify-content:center}
+.comm-title{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:var(--white);line-height:1.1;margin-bottom:3rem}
+.comm-title em{font-style:italic;color:var(--accent)}
+.event-rows{display:flex;flex-direction:column}
+.event-row{display:flex;align-items:flex-start;gap:1.5rem;padding:1.8rem 0;border-bottom:1px solid var(--line)}
+.event-row:first-child{border-top:1px solid var(--line)}
+.event-num{font-family:var(--font-display);font-size:1rem;color:var(--accent);min-width:28px;padding-top:0.1rem}
+.event-name{font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--white);margin-bottom:0.4rem}
+.event-desc{font-family:var(--font-display);font-size:1rem;font-weight:300;color:var(--white3);line-height:1.6}
+.manifesto-block{padding:3rem;border:1px solid var(--line2)}
+.mani-q{font-family:var(--font-display);font-size:1.8rem;font-weight:300;font-style:italic;color:var(--white);line-height:1.4;margin-bottom:2rem}
+.mani-q em{color:var(--accent);font-style:normal}
+.mani-src{font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--white3)}
+
+/* GALLERY */
+.gallery-section{border-bottom:1px solid var(--line)}
+.gallery-header{padding:8vh 4vw 6vh;border-bottom:1px solid var(--line);display:flex;align-items:flex-end;justify-content:space-between}
+.gallery-title{font-family:var(--font-display);font-size:clamp(3rem,6vw,5rem);font-weight:300;color:var(--white);line-height:1}
+.gallery-title em{font-style:italic;color:var(--accent)}
+.gallery-desc{font-family:var(--font-display);font-size:1.1rem;font-weight:300;font-style:italic;color:var(--white3);max-width:300px;line-height:1.7;text-align:right}
+.gallery-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:280px 280px}
+.g-item{position:relative;overflow:hidden;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer}
+.g-item:nth-child(3n){border-right:none}
+.g-item.span2{grid-row:span 2}
+.g-canvas{width:100%;height:100%}
+.g-overlay{position:absolute;inset:0;background:var(--gallery-overlay);opacity:0;transition:opacity 0.4s;display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem}
+.g-item:hover .g-overlay{opacity:1}
+.g-artist{font-family:var(--font-display);font-size:1.2rem;font-weight:300;color:var(--white)}
+.g-work{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-top:0.2rem}
+.gallery-submit{padding:2rem 4vw;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line)}
+.gallery-submit-text{font-family:var(--font-display);font-size:1.2rem;font-weight:300;font-style:italic;color:var(--white2)}
+.gallery-submit-btn{font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);padding:0.8rem 2rem;cursor:pointer;transition:background 0.2s,color 0.2s}
+.gallery-submit-btn:hover{background:var(--accent);color:var(--bg)}
+
+/* JOIN */
+.join-section{display:grid;grid-template-columns:1fr 1fr;min-height:80vh}
+.join-left{padding:10vh 4vw;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between}
+.join-right{padding:10vh 4vw;background:var(--bg2);display:flex;flex-direction:column;justify-content:center}
+.join-title{font-family:var(--font-display);font-size:clamp(3rem,5vw,5rem);font-weight:300;color:var(--white);line-height:1.05}
+.join-title em{font-style:italic;color:var(--accent)}
+.join-body{font-family:var(--font-display);font-size:1.15rem;font-weight:300;font-style:italic;color:var(--white3);line-height:1.8;max-width:360px}
+.join-contact{display:flex;flex-direction:column;gap:0.5rem}
+.join-contact-label{font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--white3)}
+.join-contact-val{font-family:var(--font-display);font-size:1.3rem;font-weight:300;color:var(--accent)}
+.form{display:flex;flex-direction:column}
+.form-field{display:flex;flex-direction:column;border-bottom:1px solid var(--line2);padding:1.2rem 0}
+.form-label{font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--white3);margin-bottom:0.5rem}
+.form-input{background:transparent;border:none;outline:none;font-family:var(--font-display);font-size:1.2rem;font-weight:300;color:var(--white)}
+.form-input::placeholder{color:var(--field-placeholder)}
+.form-select{background:transparent;border:none;outline:none;font-family:var(--font-display);font-size:1.2rem;font-weight:300;color:var(--white);appearance:none;cursor:pointer}
+.form-select option{background:var(--bg3);color:var(--white)}
+.form-btn{margin-top:2.5rem;padding:1.2rem 3rem;background:var(--accent);color:var(--bg);border:none;font-family:var(--font-ui);font-size:0.75rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;align-self:flex-start}
+.form-btn:hover{background:var(--accent2)}
+
+/* FOOTER */
+footer{padding:3rem 4vw;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center}
+.footer-logo{font-family:var(--font-ui);font-size:0.85rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--white3)}
+.footer-logo span{color:var(--accent)}
+.footer-mid{text-align:center;font-size:0.7rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--white3)}
+.footer-right{text-align:right;font-size:0.7rem;color:var(--white3);letter-spacing:0.08em;text-transform:uppercase}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:0 1.5rem}
+  .nav-links{display:none}
+  .nav-actions{margin-left:auto}
+  .theme-toggle{min-width:74px;height:32px;padding:0 0.7rem}
+  .hero{grid-template-columns:1fr;height:auto;padding-top:80px}
+  .hero-right{display:none}
+  .hero-left{padding:8vh 6vw}
+  .hero-number{display:none}
+  .philosophy,.community-section,.join-section{grid-template-columns:1fr}
+  .philo-left,.comm-left,.join-left{border-right:none;border-bottom:1px solid var(--line)}
+  .plans-container{grid-template-columns:1fr 1fr}
+  .plan{border-right:none;border-bottom:1px solid var(--line)}
+  .zone-row{grid-template-columns:40px 1fr;gap:1rem}
+  .zone-desc,.zone-badge{display:none}
+  .gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:200px 200px 200px}
+  .g-item.span2{grid-row:span 1}
+  footer{grid-template-columns:1fr;gap:1rem;text-align:left}
+  .footer-mid,.footer-right{text-align:left}
+}
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<nav>
+  <div class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    WORK'N&nbsp;
+    <span class="nav-switcher-wrap">
+      <span class="nav-switcher-track">
+        <span class="nav-word">LIFE</span>
+        <span class="nav-word">GYM</span>
+        <span class="nav-word">ART</span>
+        <span class="nav-word">KITCHEN</span>
+        <span class="nav-word">CAFÉ</span>
+        <span class="nav-word">EVENT</span>
+        <span class="nav-word">MEET</span>
+        <span class="nav-word">LIFE</span>
+      </span>
+    </span>
+  </div>
+  <div class="nav-actions">
+    <div class="nav-links">
+      <a href="#philosophy">Philosophy</a>
+      <a href="#space">Space</a>
+      <a href="#membership">Membership</a>
+      <a href="#community">Community</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#join" class="nav-cta">Join</a>
+    </div>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch theme" aria-live="polite">
+      <span class="theme-toggle-label">Light</span>
+    </button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-number">W</div>
+  <div class="hero-left">
+    <div class="hero-eyebrow">Sarajevo, Bosnia &amp; Herzegovina — 2026</div>
+    <div>
+      <div class="hero-biglogo">
+        <span class="hero-biglogo-work">Work'<span class="hero-biglogo-n">n</span></span>
+        <div class="hero-biglogo-switcher" data-hero-words="Life,Gym,Art,Kitchen,Café,Event,Meet">
+          <span class="hero-biglogo-word" id="hero-rotating-word">Life</span>
+        </div>
+      </div>
+      <p class="hero-tagline">Where work meets living.<br>Sarajevo's first full-life workspace.</p>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-meta">
+      <div class="hero-stat-row"><span class="hero-stat-val">1,800</span><span class="hero-stat-key">Square metres</span></div>
+      <div class="hero-stat-row"><span class="hero-stat-val">8+</span><span class="hero-stat-key">Distinct zones</span></div>
+      <div class="hero-stat-row"><span class="hero-stat-val">1</span><span class="hero-stat-key">Community</span></div>
+    </div>
+    <div class="hero-bottom">
+      <span class="hero-loc">Sarajevo · BA</span>
+      <span class="hero-scroll"><span class="hero-scroll-line"></span>Scroll</span>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span class="marquee-item">Co-working <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Gym &amp; Wellness <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Kindergarten <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Artist Gallery <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Event Space <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Meeting Rooms <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Community Kitchen <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Call Rooms <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Co-working <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Gym &amp; Wellness <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Kindergarten <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Artist Gallery <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Event Space <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Meeting Rooms <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Community Kitchen <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Call Rooms <span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<section class="philosophy" id="philosophy">
+  <div class="philo-left">
+    <div>
+      <div class="sec-num">01 — Philosophy</div>
+      <div class="big-quote" style="margin-top:2rem">Redefining what a <em>workplace</em> means in modern life.</div>
+    </div>
+    <p class="body-text">Work'n Life was born from a radical vision: that the way we work should honour the way we live. We didn't build another co-working space. We built a new kind of place — one that holds your ambition, your family, your body, and your creativity all at once.<br><br>Sarajevo is ready for this. And so are you.</p>
+  </div>
+  <div class="philo-right">
+    <div class="sec-num" style="margin-bottom:3rem">Our values</div>
+    <div class="values-list">
+      <div class="value-row"><span class="value-idx">I</span><div><div class="value-name">Balance</div><div class="value-desc">Work and life carry equal weight. Neither is sacrificed for the other.</div></div></div>
+      <div class="value-row"><span class="value-idx">II</span><div><div class="value-name">Community</div><div class="value-desc">We grow together. Every member adds to the fabric of this place.</div></div></div>
+      <div class="value-row"><span class="value-idx">III</span><div><div class="value-name">Wellbeing</div><div class="value-desc">Body and mind first. A rested, whole person does their best work.</div></div></div>
+      <div class="value-row"><span class="value-idx">IV</span><div><div class="value-name">Intention</div><div class="value-desc">Every corner of this space was designed with radical purpose.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="space-section" id="space">
+  <div class="space-header">
+    <div>
+      <div class="sec-num">02 — The Space</div>
+      <div class="space-title" style="margin-top:1rem">1,800 m² of<br><em>purposeful</em> design</div>
+    </div>
+    <div class="space-sub">Each zone carries its own mood, energy &amp; function</div>
+  </div>
+  <div class="zones-table">
+    <div class="zone-row"><div class="zone-n">01</div><div><div class="zone-title">Co-working Floor</div></div><div class="zone-desc">Open desks and focused hot seats with high-speed connectivity and natural light.</div><div class="zone-badge">Work</div></div>
+    <div class="zone-row"><div class="zone-n">02</div><div><div class="zone-title">Private Meeting Rooms</div></div><div class="zone-desc">Bookable, acoustically designed rooms for client calls and team sessions.</div><div class="zone-badge">Work</div></div>
+    <div class="zone-row"><div class="zone-n">03</div><div><div class="zone-title">Call Rooms</div></div><div class="zone-desc">Compact soundproofed pods for solo calls and video meetings.</div><div class="zone-badge">Work</div></div>
+    <div class="zone-row"><div class="zone-n">04</div><div><div class="zone-title">Fitness Studio</div></div><div class="zone-desc">A full gym to move your body between deep work sessions.</div><div class="zone-badge">Wellbeing</div></div>
+    <div class="zone-row"><div class="zone-n">05</div><div><div class="zone-title">Kindergarten &amp; Daycare</div></div><div class="zone-desc">Professional childcare so parents can focus without compromise.</div><div class="zone-badge">Family</div></div>
+    <div class="zone-row"><div class="zone-n">06</div><div><div class="zone-title">Community Kitchen</div></div><div class="zone-desc">A warm, well-stocked kitchen — the heartbeat of the community.</div><div class="zone-badge">Community</div></div>
+    <div class="zone-row"><div class="zone-n">07</div><div><div class="zone-title">Event Space</div></div><div class="zone-desc">Flexible venue for workshops, talks, launches and networking.</div><div class="zone-badge">Events</div></div>
+    <div class="zone-row"><div class="zone-n">08</div><div><div class="zone-title">Artist Gallery</div></div><div class="zone-desc">Rotating exhibitions giving Sarajevo's artists a professional platform.</div><div class="zone-badge">Culture</div></div>
+  </div>
+</section>
+
+<section class="membership-section" id="membership">
+  <div class="membership-header">
+    <div>
+      <div class="sec-num">03 — Membership</div>
+      <div class="membership-title" style="margin-top:1rem">Find your <em>place</em></div>
+    </div>
+    <div class="membership-note">Premium plans designed for how modern professionals actually live and work in Sarajevo.</div>
+  </div>
+  <div class="plans-container">
+    <div class="plan"><div class="plan-tag">Entry</div><div class="plan-name">Day Pass</div><p class="plan-desc">Experience Work'n Life before committing. Full access, no strings.</p><ul class="plan-feats"><li class="plan-feat">Full co-working access</li><li class="plan-feat">Kitchen &amp; common areas</li><li class="plan-feat">1 call room booking</li><li class="plan-feat">Gym access</li></ul></div>
+    <div class="plan"><div class="plan-tag">Flexible</div><div class="plan-name">Hot Desk</div><p class="plan-desc">Monthly access — your seat changes, your community doesn't.</p><ul class="plan-feats"><li class="plan-feat">Flexible daily seating</li><li class="plan-feat">Full amenity access</li><li class="plan-feat">Community events</li><li class="plan-feat">Gym &amp; wellness</li></ul></div>
+    <div class="plan featured"><div class="plan-tag">Most Popular</div><div class="plan-name">Dedicated Desk</div><p class="plan-desc">Your permanent seat. Your space. Your community — every day.</p><ul class="plan-feats"><li class="plan-feat">Reserved personal desk</li><li class="plan-feat">Lockable storage</li><li class="plan-feat">Priority bookings</li><li class="plan-feat">Full gym &amp; classes</li></ul></div>
+    <div class="plan"><div class="plan-tag">Family</div><div class="plan-name">Family Plan</div><p class="plan-desc">Co-working + kindergarten — for parents who refuse to choose.</p><ul class="plan-feats"><li class="plan-feat">Dedicated desk</li><li class="plan-feat">Daycare for one child</li><li class="plan-feat">Family events</li><li class="plan-feat">All amenities</li></ul></div>
+    <div class="plan"><div class="plan-tag">Teams</div><div class="plan-name">Team Suite</div><p class="plan-desc">Private office for small teams who need focus and community.</p><ul class="plan-feats"><li class="plan-feat">Private office 2–8</li><li class="plan-feat">Meeting room hours</li><li class="plan-feat">Team branding</li><li class="plan-feat">Full amenity access</li></ul></div>
+  </div>
+</section>
+
+<section class="community-section" id="community">
+  <div class="comm-left">
+    <div class="sec-num">04 — Community &amp; Events</div>
+    <div class="comm-title" style="margin-top:1.5rem">A calendar built<br>for <em>growth</em></div>
+    <div class="event-rows">
+      <div class="event-row"><span class="event-num">01</span><div><div class="event-name">Wellness Classes</div><div class="event-desc">Weekly yoga, meditation and movement. Recharge to refocus.</div></div></div>
+      <div class="event-row"><span class="event-num">02</span><div><div class="event-name">Skill-Sharing Workshops</div><div class="event-desc">Member-led sessions on design, tech, business, and creativity.</div></div></div>
+      <div class="event-row"><span class="event-num">03</span><div><div class="event-name">Monthly Networking</div><div class="event-desc">Curated gatherings connecting Sarajevo's growing professional scene.</div></div></div>
+      <div class="event-row"><span class="event-num">04</span><div><div class="event-name">Artist Exhibitions</div><div class="event-desc">Regular openings weaving local culture into the daily rhythm of work.</div></div></div>
+    </div>
+  </div>
+  <div class="comm-right">
+    <div class="manifesto-block">
+      <p class="mani-q">"The modern professional doesn't want to choose between <em>ambition</em> and presence. Work'n Life exists so they never have to."</p>
+      <div class="mani-src">— The Work'n Life Manifesto</div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery-section" id="gallery">
+  <div class="gallery-header">
+    <div>
+      <div class="sec-num">05 — Artist Gallery</div>
+      <div class="gallery-title" style="margin-top:1rem">Where work meets <em>culture</em></div>
+    </div>
+    <div class="gallery-desc">Sarajevo's artists deserve a stage. Our walls are theirs.</div>
+  </div>
+  <div class="gallery-grid">
+    <div class="g-item span2">
+      <svg class="g-canvas" viewBox="0 0 600 560" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><rect width="600" height="560" fill="#0a0f1a"/><circle cx="300" cy="280" r="200" fill="none" stroke="#e8c87a" stroke-width="0.5" opacity="0.3"/><circle cx="300" cy="280" r="150" fill="none" stroke="#e8c87a" stroke-width="0.5" opacity="0.4"/><circle cx="300" cy="280" r="100" fill="none" stroke="#e8c87a" stroke-width="0.8" opacity="0.5"/><circle cx="300" cy="280" r="50" fill="#e8c87a" opacity="0.08"/><line x1="50" y1="280" x2="550" y2="280" stroke="#e8c87a" stroke-width="0.4" opacity="0.25"/><line x1="300" y1="80" x2="300" y2="480" stroke="#e8c87a" stroke-width="0.4" opacity="0.25"/><circle cx="300" cy="280" r="8" fill="#e8c87a" opacity="0.9"/></svg>
+      <div class="g-overlay"><div class="g-artist">Amina Hodžić</div><div class="g-work">Meridian Series · 2025</div></div>
+    </div>
+    <div class="g-item">
+      <svg class="g-canvas" viewBox="0 0 300 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><rect width="300" height="280" fill="#14080a"/><rect x="30" y="30" width="50" height="220" fill="#e8c87a" opacity="0.75"/><rect x="95" y="70" width="35" height="180" fill="#c8c4be" opacity="0.4"/><rect x="145" y="40" width="60" height="210" fill="#e8c87a" opacity="0.45"/></svg>
+      <div class="g-overlay"><div class="g-artist">Luka Petrović</div><div class="g-work">Urban Strata · 2025</div></div>
+    </div>
+    <div class="g-item">
+      <svg class="g-canvas" viewBox="0 0 300 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><rect width="300" height="280" fill="#050d12"/><path d="M0 240 Q75 80 150 160 Q225 240 300 100" fill="none" stroke="#e8c87a" stroke-width="2.5" opacity="0.85"/><circle cx="150" cy="160" r="8" fill="#e8c87a"/></svg>
+      <div class="g-overlay"><div class="g-artist">Sara Begović</div><div class="g-work">Neretva Flow · 2025</div></div>
+    </div>
+    <div class="g-item">
+      <svg class="g-canvas" viewBox="0 0 300 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><rect width="300" height="280" fill="#0a0f08"/><polygon points="150,30 270,250 30,250" fill="none" stroke="#e8c87a" stroke-width="1.2" opacity="0.65"/><circle cx="150" cy="170" r="6" fill="#e8c87a" opacity="0.9"/></svg>
+      <div class="g-overlay"><div class="g-artist">Emir Šabanović</div><div class="g-work">Geometry of Home · 2024</div></div>
+    </div>
+    <div class="g-item">
+      <svg class="g-canvas" viewBox="0 0 300 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><rect width="300" height="280" fill="#110818"/><rect x="40" y="40" width="70" height="70" fill="#e8c87a" opacity="0.6" transform="rotate(18 75 75)"/><circle cx="240" cy="60" r="22" fill="#e8c87a" opacity="0.2"/></svg>
+      <div class="g-overlay"><div class="g-artist">Maja Kovač</div><div class="g-work">Fragmented Light · 2025</div></div>
+    </div>
+  </div>
+  <div class="gallery-submit">
+    <span class="gallery-submit-text">Are you a local artist? We want your work on our walls.</span>
+    <button class="gallery-submit-btn">Submit your work →</button>
+  </div>
+</section>
+
+<section class="join-section" id="join">
+  <div class="join-left">
+    <div class="sec-num">06 — Join the Movement</div>
+    <div class="join-title" style="margin-top:2rem">Be part of<br>something <em>new.</em></div>
+    <p class="join-body">Work'n Life is opening in Sarajevo. Join the waitlist to be among the first members and help shape this community from day one.</p>
+    <div class="join-contact">
+      <span class="join-contact-label">Location</span>
+      <span class="join-contact-val">Sarajevo, Bosnia &amp; Herzegovina</span>
+    </div>
+  </div>
+  <div class="join-right">
+    <div class="form">
+      <div class="form-field"><label class="form-label" for="name">Full name</label><input id="name" class="form-input" placeholder="Your name" type="text" /></div>
+      <div class="form-field"><label class="form-label" for="email">Email address</label><input id="email" class="form-input" placeholder="your@email.com" type="email" /></div>
+      <div class="form-field"><label class="form-label" for="plan">Interested in</label><select id="plan" class="form-select"><option value="" disabled selected>Select a plan</option><option>Day Pass</option><option>Hot Desk</option><option>Dedicated Desk</option><option>Family Plan</option><option>Team Suite</option></select></div>
+      <div class="form-field"><label class="form-label" for="about">Tell us about you</label><input id="about" class="form-input" placeholder="Freelancer, startup, remote worker…" type="text" /></div>
+      <button class="form-btn">Reserve my spot →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Work'n <span>Life</span></div>
+  <div class="footer-mid">© 2026 Work'n Life · All rights reserved</div>
+  <div class="footer-right">Sarajevo · Bosnia &amp; Herzegovina</div>
+</footer>
+
+<script>
+/* ============================================
+   WORK'N LIFE — Main JavaScript
+   ============================================ */
+
+/* THEME TOGGLE */
+const THEME_KEY = 'wnl-theme';
+const root = document.documentElement;
+const themeToggle = document.getElementById('theme-toggle');
+const themeToggleLabel = themeToggle?.querySelector('.theme-toggle-label');
+
+const getInitialTheme = () => {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === 'light' || saved === 'dark') return saved;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+
+const setTheme = (theme) => {
+  root.setAttribute('data-theme', theme);
+  if (themeToggle) {
+    themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  if (themeToggleLabel) {
+    themeToggleLabel.textContent = theme === 'dark' ? 'Light' : 'Dark';
+  }
+};
+
+setTheme(getInitialTheme());
+
+themeToggle?.addEventListener('click', () => {
+  const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  setTheme(nextTheme);
+  localStorage.setItem(THEME_KEY, nextTheme);
+});
+
+/* CUSTOM CURSOR */
+const cursor = document.getElementById('cursor');
+if (cursor) {
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, button, .gallery-submit-btn, .zone-row').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(3)';
+      cursor.style.opacity = '0.5';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      cursor.style.opacity = '1';
+    });
+  });
+}
+
+/* SMOOTH SCROLL */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+/* NAV HIDE ON SCROLL */
+let lastScrollY = window.scrollY;
+const nav = document.querySelector('nav');
+if (nav) {
+  nav.style.transition = 'transform 0.3s ease';
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > lastScrollY && window.scrollY > 100) {
+      nav.style.transform = 'translateY(-100%)';
+    } else {
+      nav.style.transform = 'translateY(0)';
+    }
+    lastScrollY = window.scrollY;
+  }, { passive: true });
+}
+
+/* SCROLL REVEAL */
+const revealEls = document.querySelectorAll('.zone-row, .plan, .value-row, .event-row, .g-item, .hero-stat-row');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+revealEls.forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = `opacity 0.6s ease ${i * 0.05}s, transform 0.6s ease ${i * 0.05}s`;
+  observer.observe(el);
+});
+
+/* FORM SUBMIT */
+const formBtn = document.querySelector('.form-btn');
+if (formBtn) {
+  formBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const name  = document.querySelector('.form-input[type="text"]')?.value.trim();
+    const email = document.querySelector('.form-input[type="email"]')?.value.trim();
+    if (!name || !email) {
+      formBtn.textContent = 'Please fill in all fields';
+      formBtn.style.background = getComputedStyle(root).getPropertyValue('--form-error-bg').trim();
+      setTimeout(() => { formBtn.textContent = 'Reserve my spot →'; formBtn.style.background = ''; }, 2500);
+      return;
+    }
+    formBtn.textContent = "You're on the list ✓";
+    formBtn.style.background = getComputedStyle(root).getPropertyValue('--form-success-bg').trim();
+    formBtn.style.color = getComputedStyle(root).getPropertyValue('--form-success-text').trim();
+    formBtn.disabled = true;
+    /* TODO: connect to Formspree / Mailchimp / EmailJS */
+  });
+}
+
+/* GALLERY — submit scrolls to join */
+document.querySelector('.gallery-submit-btn')?.addEventListener('click', () => {
+  document.querySelector('#join')?.scrollIntoView({ behavior: 'smooth' });
+});
+
+/* HERO WORD ROTATOR */
+const heroWordWrap = document.querySelector('.hero-biglogo-switcher');
+const heroWordEl = document.getElementById('hero-rotating-word');
+if (heroWordWrap && heroWordEl) {
+  const words = (heroWordWrap.getAttribute('data-hero-words') || '')
+    .split(',')
+    .map(word => word.trim())
+    .filter(Boolean);
+  if (words.length > 1) {
+    let wordIndex = 0;
+    window.setInterval(() => {
+      heroWordEl.classList.add('is-fading');
+      window.setTimeout(() => {
+        wordIndex = (wordIndex + 1) % words.length;
+        heroWordEl.textContent = words[wordIndex];
+        heroWordEl.classList.remove('is-fading');
+      }, 220);
+    }, 1800);
+  }
+}
+
+/* HERO scroll hint */
+document.querySelector('.hero-scroll')?.addEventListener('click', () => {
+  document.querySelector('#philosophy')?.scrollIntoView({ behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
