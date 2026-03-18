@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zana — FlashCards</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --cream: #faf6ef;
+        --ink: #1a1208;
+        --terracotta: #c9603a;
+        --gold: #c9a84c;
+        --card-border: #ddd4c0;
+        --shadow: rgba(26, 18, 8, 0.1);
+        --card-gap: 10px;
+        --font-size-word: 22px;
+        --cols: 3;
+        --card-radius: 0px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--cream);
+        color: var(--ink);
+        font-family: "DM Sans", sans-serif;
+        min-height: 100vh;
+      }
+      #app {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        background: var(--ink);
+        color: var(--cream);
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      header .logo {
+        font-family: "Playfair Display", serif;
+        font-size: 1.45rem;
+      }
+      header .logo span {
+        color: var(--terracotta);
+      }
+      header .badge {
+        background: var(--terracotta);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      /* SETUP */
+      #setup {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 24px;
+      }
+      .setup-card {
+        background: #fff;
+        border: 1.5px solid var(--card-border);
+        border-radius: 20px;
+        padding: 38px 46px;
+        width: 100%;
+        max-width: 560px;
+        box-shadow: 0 8px 40px var(--shadow);
+      }
+      .setup-card h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+      }
+      .setup-card p.sub {
+        color: #888;
+        font-size: 14px;
+        margin-bottom: 28px;
+        line-height: 1.6;
+      }
+
+      label {
+        display: block;
+        font-size: 11.5px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #888;
+        margin-bottom: 6px;
+      }
+      select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--card-border);
+        border-radius: 9px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        color: var(--ink);
+        background: var(--cream);
+        outline: none;
+        transition: border-color 0.2s;
+        margin-bottom: 14px;
+      }
+      select:focus {
+        border-color: var(--terracotta);
+      }
+
+      .controls-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 18px;
+        margin-bottom: 16px;
+      }
+      .controls-grid label {
+        margin-bottom: 4px;
+      }
+      .controls-grid select {
+        margin-bottom: 0;
+      }
+      .range-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .range-row input[type="range"] {
+        flex: 1;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        accent-color: var(--terracotta);
+      }
+      .range-val {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--terracotta);
+        width: 40px;
+        text-align: right;
+      }
+
+      .section-title {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #aaa;
+        margin: 20px 0 12px;
+        border-top: 1px solid var(--card-border);
+        padding-top: 16px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 22px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.18s;
+      }
+      .btn-primary {
+        background: var(--terracotta);
+        color: #fff;
+        width: 100%;
+        font-size: 15px;
+        padding: 14px;
+        margin-top: 4px;
+      }
+      .btn-primary:hover {
+        background: #b85430;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(201, 96, 58, 0.25);
+      }
+
+      /* ORIENTATION PICKER */
+      .orient-picker {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 4px;
+      }
+      .orient-opt {
+        flex: 1;
+        border: 2px solid var(--card-border);
+        border-radius: 12px;
+        padding: 12px 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.18s;
+        background: var(--cream);
+      }
+      .orient-opt:hover {
+        border-color: var(--terracotta);
+      }
+      .orient-opt.selected {
+        border-color: var(--terracotta);
+        background: #fff5f2;
+      }
+      .orient-opt input {
+        display: none;
+      }
+      .orient-preview {
+        margin: 0 auto 8px;
+        background: #ddd4c0;
+        border-radius: 3px;
+      }
+      .orient-preview.portrait {
+        width: 30px;
+        height: 44px;
+      }
+      .orient-preview.landscape {
+        width: 52px;
+        height: 36px;
+      }
+      .orient-opt.selected .orient-preview {
+        background: var(--terracotta);
+        opacity: 0.7;
+      }
+      .orient-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .orient-opt.selected .orient-label {
+        color: var(--terracotta);
+      }
+      .orient-sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+      }
+
+      /* CORNER RADIUS VISUAL PICKER */
+      .radius-picker {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .radius-opt {
+        flex: 1;
+        border: 2px solid var(--card-border);
+        border-radius: 10px;
+        padding: 12px 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.18s;
+        background: var(--cream);
+      }
+      .radius-opt:hover {
+        border-color: var(--terracotta);
+      }
+      .radius-opt.selected {
+        border-color: var(--terracotta);
+        background: #fff5f2;
+      }
+      .radius-opt input {
+        display: none;
+      }
+      .radius-preview {
+        margin: 0 auto 8px;
+        width: 34px;
+        height: 26px;
+        background: #c0b8a8;
+      }
+      .radius-opt.selected .radius-preview {
+        background: var(--terracotta);
+        opacity: 0.75;
+      }
+      .radius-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #666;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .radius-opt.selected .radius-label {
+        color: var(--terracotta);
+      }
+
+      /* custom slider row */
+      .radius-custom {
+        margin-top: 12px;
+        display: none;
+      }
+      .radius-custom.visible {
+        display: block;
+      }
+
+      #error-msg {
+        color: #c0392b;
+        font-size: 13px;
+        margin-top: 8px;
+        display: none;
+        background: #fff0ee;
+        padding: 11px 14px;
+        border-radius: 8px;
+        border-left: 3px solid #c0392b;
+        line-height: 1.7;
+      }
+
+      .toggle-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .toggle-group > label {
+        margin: 0;
+        text-transform: none;
+        font-size: 13px;
+        color: var(--ink);
+        letter-spacing: 0;
+      }
+      .switch {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        inset: 0;
+        background: #ddd;
+        border-radius: 20px;
+        transition: 0.2s;
+        cursor: pointer;
+      }
+      .slider::before {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        left: 3px;
+        top: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.2s;
+      }
+      input:checked + .slider {
+        background: var(--terracotta);
+      }
+      input:checked + .slider::before {
+        transform: translateX(16px);
+      }
+
+      /* TOOLBAR */
+      #toolbar {
+        display: none;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--ink);
+        color: var(--cream);
+        padding: 10px 16px;
+        gap: 7px;
+        align-items: center;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+      }
+      #toolbar.visible {
+        display: flex;
+      }
+      #toolbar .tl {
+        font-family: "Playfair Display", serif;
+        font-size: 0.95rem;
+        margin-right: auto;
+      }
+      #toolbar .tl span {
+        color: var(--gold);
+      }
+      .tg {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 8px;
+        padding: 5px 9px;
+      }
+      .tg label {
+        color: #aaa;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin: 0;
+        white-space: nowrap;
+      }
+      .tg select {
+        background: transparent;
+        border: none;
+        color: var(--cream);
+        font-size: 12px;
+        margin: 0;
+        padding: 2px 4px;
+        outline: none;
+      }
+      .tg input[type="range"] {
+        width: 68px;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        accent-color: var(--gold);
+      }
+      .tg .tv {
+        color: var(--gold);
+        font-size: 11px;
+        font-weight: 600;
+        width: 32px;
+      }
+      #count-badge {
+        background: var(--terracotta);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+      }
+
+      /* PREVIEW */
+      #preview-area {
+        display: none;
+        padding: 24px;
+        background: #e8e2d8;
+        min-height: calc(100vh - 55px);
+      }
+      #preview-area.visible {
+        display: block;
+      }
+      .page {
+        background: #fff;
+        margin: 0 auto 28px;
+        box-shadow: 0 4px 28px rgba(0, 0, 0, 0.15);
+      }
+      .page-a4 {
+        width: 794px;
+        min-height: 1123px;
+        padding: 32px;
+      }
+      .page-a3 {
+        width: 1123px;
+        min-height: 1587px;
+        padding: 44px;
+      }
+      .cards-grid {
+        display: grid;
+        gap: var(--card-gap);
+      }
+
+      /* FLASHCARD */
+      .flashcard {
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        background: #222;
+        position: relative;
+        break-inside: avoid;
+        display: flex;
+        align-items: flex-end;
+      }
+      .flashcard .fc-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .flashcard .fc-img-err {
+        position: absolute;
+        inset: 0;
+        background: #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        color: #555;
+      }
+      .flashcard .fc-label {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.52);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 8px;
+        text-align: center;
+        gap: 2px;
+      }
+      .fc-word {
+        font-family: "Playfair Display", serif;
+        font-size: var(--font-size-word);
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.15;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+      }
+      .fc-article {
+        font-family: "Playfair Display", serif;
+        font-size: calc(var(--font-size-word) * 0.65);
+        font-style: italic;
+        color: var(--gold);
+        font-weight: 400;
+        letter-spacing: 0.04em;
+      }
+      .fc-trans {
+        font-size: calc(var(--font-size-word) * 0.6);
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 300;
+        letter-spacing: 0.02em;
+      }
+      .fc-num {
+        position: absolute;
+        top: 6px;
+        right: 7px;
+        z-index: 3;
+        font-size: 9px;
+        color: rgba(255, 255, 255, 0.45);
+        font-weight: 500;
+      }
+      .flashcard.no-img-card {
+        background: linear-gradient(135deg, #2c1f10, #4a3020);
+        align-items: center;
+        justify-content: center;
+      }
+      .flashcard.no-img-card .fc-label {
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        position: static;
+        width: auto;
+      }
+      .flashcard.no-img-card .fc-word {
+        color: var(--cream);
+      }
+
+      /* LOADING */
+      #loading {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding: 80px;
+        flex: 1;
+      }
+      #loading.active {
+        display: flex;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--card-border);
+        border-top-color: var(--terracotta);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media print {
+        body {
+          background: white !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        header,
+        #toolbar,
+        #setup,
+        #loading {
+          display: none !important;
+        }
+        #preview-area {
+          display: block !important;
+          padding: 0 !important;
+          background: white !important;
+        }
+        .page {
+          box-shadow: none !important;
+          margin: 0 !important;
+          page-break-after: always;
+          break-after: page;
+        }
+        .page:last-child {
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+        @page {
+          margin: 0;
+          size: A4;
+        }
+        .flashcard .fc-label {
+          background: #fff !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+        .flashcard {
+          outline: 1px solid #000 !important;
+        }
+        .fc-word,
+        .fc-article,
+        .fc-trans,
+        .fc-num {
+          color: #111 !important;
+          text-shadow: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="logo">Zana<span>FlashCards</span></div>
+        <div class="badge">Print Studio</div>
+      </header>
+
+      <div id="setup">
+        <div class="setup-card">
+          <h2>Setup your print</h2>
+          <p class="sub">Configure card style and layout, then generate.</p>
+
+          <!-- ORIENTATION -->
+          <label>Card orientation</label>
+          <div class="orient-picker">
+            <label class="orient-opt selected" id="opt-portrait">
+              <input
+                type="radio"
+                name="orient"
+                value="portrait"
+                checked
+                onchange="orientChanged()"
+              />
+              <div class="orient-preview portrait"></div>
+              <div class="orient-label">Portrait</div>
+              <div class="orient-sub">≈ 200×290</div>
+            </label>
+            <label class="orient-opt" id="opt-landscape">
+              <input
+                type="radio"
+                name="orient"
+                value="landscape"
+                onchange="orientChanged()"
+              />
+              <div class="orient-preview landscape"></div>
+              <div class="orient-label">Landscape</div>
+              <div class="orient-sub">≈ 290×200</div>
+            </label>
+          </div>
+
+          <!-- CORNER RADIUS -->
+          <div class="section-title">Card corners</div>
+          <div class="radius-picker">
+            <label
+              class="radius-opt selected"
+              id="ropt-none"
+              onclick="setRadius('none')"
+            >
+              <input type="radio" name="radius" value="none" checked />
+              <div class="radius-preview" style="border-radius: 0"></div>
+              <div class="radius-label">Sharp</div>
+            </label>
+            <label
+              class="radius-opt"
+              id="ropt-small"
+              onclick="setRadius('small')"
+            >
+              <input type="radio" name="radius" value="small" />
+              <div class="radius-preview" style="border-radius: 5px"></div>
+              <div class="radius-label">Small</div>
+            </label>
+            <label
+              class="radius-opt"
+              id="ropt-medium"
+              onclick="setRadius('medium')"
+            >
+              <input type="radio" name="radius" value="medium" />
+              <div class="radius-preview" style="border-radius: 10px"></div>
+              <div class="radius-label">Medium</div>
+            </label>
+            <label
+              class="radius-opt"
+              id="ropt-large"
+              onclick="setRadius('large')"
+            >
+              <input type="radio" name="radius" value="large" />
+              <div class="radius-preview" style="border-radius: 16px"></div>
+              <div class="radius-label">Large</div>
+            </label>
+            <label
+              class="radius-opt"
+              id="ropt-custom"
+              onclick="setRadius('custom')"
+            >
+              <input type="radio" name="radius" value="custom" />
+              <div class="radius-preview" style="border-radius: 50%"></div>
+              <div class="radius-label">Custom</div>
+            </label>
+          </div>
+          <div class="radius-custom" id="radius-custom-row">
+            <label>Custom radius</label>
+            <div class="range-row">
+              <input
+                type="range"
+                id="radius-custom-val"
+                min="0"
+                max="40"
+                value="8"
+                oninput="updateCustomRadius()"
+              />
+              <span class="range-val" id="radius-custom-display">8px</span>
+            </div>
+          </div>
+
+          <!-- LAYOUT -->
+          <div class="section-title">Layout</div>
+          <div class="controls-grid">
+            <div>
+              <label>Page size</label
+              ><select id="page-size">
+                <option value="a4">A4</option>
+                <option value="a3">A3</option>
+              </select>
+            </div>
+            <div>
+              <label>Cards per row</label
+              ><select id="cols">
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+            <div>
+              <label>Card gap</label>
+              <div class="range-row">
+                <input
+                  type="range"
+                  id="card-gap"
+                  min="0"
+                  max="32"
+                  value="10"
+                /><span class="range-val" id="gap-val">10px</span>
+              </div>
+            </div>
+            <div>
+              <label>Word font size</label>
+              <div class="range-row">
+                <input
+                  type="range"
+                  id="font-word"
+                  min="10"
+                  max="36"
+                  value="22"
+                /><span class="range-val" id="fw-val">22px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title" style="margin-top: 4px">
+            Display options
+          </div>
+          <div class="toggle-group">
+            <label class="switch"
+              ><input type="checkbox" id="show-numbers" /><span
+                class="slider"
+              ></span></label
+            ><label for="show-numbers">Show card numbers</label>
+          </div>
+          <div class="toggle-group">
+            <label class="switch"
+              ><input type="checkbox" id="show-trans" /><span
+                class="slider"
+              ></span></label
+            ><label for="show-trans">Show translation</label>
+          </div>
+          <div class="toggle-group">
+            <label class="switch"
+              ><input type="checkbox" id="show-article" /><span
+                class="slider"
+              ></span></label
+            ><label for="show-article">Show article (il/la…)</label>
+          </div>
+
+          <button class="btn btn-primary" onclick="loadData()">
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+            Generate Flashcards
+          </button>
+          <div id="error-msg"></div>
+        </div>
+      </div>
+
+      <!-- LOADING -->
+      <div id="loading">
+        <div class="spinner"></div>
+        <p style="color: #888; font-size: 15px" id="loading-msg">
+          Loading your wordlist…
+        </p>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div id="toolbar">
+        <div class="tl">Flash<span>Italia</span></div>
+        <span id="count-badge">0 cards</span>
+        <div class="tg">
+          <label>Orient</label>
+          <select id="tb-orient" onchange="applyLayout()">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+        </div>
+        <div class="tg">
+          <label>Size</label
+          ><select id="tb-size" onchange="applyLayout()">
+            <option value="a4">A4</option>
+            <option value="a3">A3</option>
+          </select>
+        </div>
+        <div class="tg">
+          <label>Cols</label
+          ><select id="tb-cols" onchange="applyLayout()">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div class="tg">
+          <label>Gap</label
+          ><input
+            type="range"
+            id="tb-gap"
+            min="0"
+            max="32"
+            value="10"
+            oninput="applyLayout()"
+          /><span class="tv" id="tb-gap-v">10px</span>
+        </div>
+        <div class="tg">
+          <label>Font</label
+          ><input
+            type="range"
+            id="tb-fw"
+            min="10"
+            max="36"
+            value="22"
+            oninput="applyLayout()"
+          /><span class="tv" id="tb-fw-v">22px</span>
+        </div>
+        <div class="tg">
+          <label>Corners</label>
+          <input
+            type="range"
+            id="tb-radius"
+            min="0"
+            max="40"
+            value="0"
+            oninput="applyRadiusFromToolbar()"
+          />
+          <span class="tv" id="tb-radius-v">0px</span>
+        </div>
+        <button
+          class="btn"
+          style="
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 7px 12px;
+            font-size: 12px;
+          "
+          onclick="backToSetup()"
+        >
+          ← Edit
+        </button>
+        <button
+          class="btn"
+          style="
+            background: var(--gold);
+            color: var(--ink);
+            padding: 7px 16px;
+            font-size: 12px;
+          "
+          onclick="window.print()"
+        >
+          <svg
+            width="13"
+            height="13"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path
+              d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+            />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          Print / PDF
+        </button>
+      </div>
+
+      <div id="preview-area"></div>
+    </div>
+
+    <script>
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbxkzUS5RyNvVwCg5pUskNQBOCuN5a28nQFhwiW_Ob7QXJ_6N2Qj3C2_1qaOrKiuXWSGuA/exec";
+      let allCards = [];
+      let currentRadius = 0;
+
+      // Range labels
+      function bindRange(id, valId) {
+        const el = document.getElementById(id),
+          vl = document.getElementById(valId);
+        const upd = () => (vl.textContent = el.value + "px");
+        el.addEventListener("input", upd);
+        upd();
+      }
+      bindRange("card-gap", "gap-val");
+      bindRange("font-word", "fw-val");
+      bindRange("radius-custom-val", "radius-custom-display");
+
+      // Orientation
+      function orientChanged() {
+        const val = document.querySelector("input[name=orient]:checked").value;
+        document
+          .getElementById("opt-portrait")
+          .classList.toggle("selected", val === "portrait");
+        document
+          .getElementById("opt-landscape")
+          .classList.toggle("selected", val === "landscape");
+      }
+
+      // Corner radius presets
+      const RADIUS_MAP = { none: 0, small: 6, medium: 12, large: 20 };
+
+      function setRadius(type) {
+        ["none", "small", "medium", "large", "custom"].forEach((t) => {
+          document
+            .getElementById("ropt-" + t)
+            .classList.toggle("selected", t === type);
+        });
+        const customRow = document.getElementById("radius-custom-row");
+        if (type === "custom") {
+          customRow.classList.add("visible");
+          currentRadius = parseInt(
+            document.getElementById("radius-custom-val").value,
+          );
+        } else {
+          customRow.classList.remove("visible");
+          currentRadius = RADIUS_MAP[type];
+        }
+        document.documentElement.style.setProperty(
+          "--card-radius",
+          currentRadius + "px",
+        );
+        document.getElementById("tb-radius").value = currentRadius;
+        document.getElementById("tb-radius-v").textContent =
+          currentRadius + "px";
+        if (allCards.length) applyLayout();
+      }
+
+      function updateCustomRadius() {
+        currentRadius = parseInt(
+          document.getElementById("radius-custom-val").value,
+        );
+        document.documentElement.style.setProperty(
+          "--card-radius",
+          currentRadius + "px",
+        );
+        document.getElementById("tb-radius").value = currentRadius;
+        document.getElementById("tb-radius-v").textContent =
+          currentRadius + "px";
+        if (allCards.length) applyLayout();
+      }
+
+      function applyRadiusFromToolbar() {
+        currentRadius = parseInt(document.getElementById("tb-radius").value);
+        document.getElementById("tb-radius-v").textContent =
+          currentRadius + "px";
+        document.documentElement.style.setProperty(
+          "--card-radius",
+          currentRadius + "px",
+        );
+        if (allCards.length) applyLayout();
+      }
+
+      function showError(msg) {
+        const el = document.getElementById("error-msg");
+        el.innerHTML = msg;
+        el.style.display = "block";
+      }
+
+      // ── LOAD ───────────────────────────────────────────────────
+      async function loadData() {
+        document.getElementById("error-msg").style.display = "none";
+        document.getElementById("setup").style.display = "none";
+        document.getElementById("loading").classList.add("active");
+        document.getElementById("loading-msg").textContent =
+          "Loading your wordlist…";
+
+        try {
+          const resp = await fetch(SCRIPT_URL);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const rows = await resp.json();
+          if (!Array.isArray(rows) || rows.length === 0)
+            throw new Error("No data returned from sheet.");
+
+          // Auto-detect keys (sheet has: id, parola, img)
+          const keys = Object.keys(rows[0]);
+          const findKey = (candidates) =>
+            keys.find((k) =>
+              candidates.some((c) => k.toLowerCase().includes(c)),
+            ) || null;
+          const wordKey =
+            findKey(["parola", "word", "italian", "nome", "term"]) || keys[1];
+          const imgKey =
+            findKey(["img", "image", "immagine", "url", "foto"]) || keys[2];
+          const artKey = findKey(["articol", "article", "il", "la", "gender"]);
+          const trKey = findKey(["translat", "traduz", "english", "trans"]);
+
+          allCards = [];
+          rows.forEach((row) => {
+            const word = String(row[wordKey] ?? "").trim();
+            if (!word) return;
+            allCards.push({
+              word,
+              num: allCards.length + 1,
+              article: artKey ? String(row[artKey] ?? "").trim() : "",
+              trans: trKey ? String(row[trKey] ?? "").trim() : "",
+              img: imgKey ? String(row[imgKey] ?? "").trim() : "",
+            });
+          });
+
+          if (!allCards.length) throw new Error("No words found in the sheet.");
+          finishLoading();
+        } catch (e) {
+          document.getElementById("loading").classList.remove("active");
+          document.getElementById("setup").style.display = "flex";
+          showError(`<strong>Could not load sheet.</strong> ${e.message}`);
+        }
+      }
+
+      function finishLoading() {
+        document.getElementById("tb-orient").value = document.querySelector(
+          "input[name=orient]:checked",
+        ).value;
+        document.getElementById("tb-size").value =
+          document.getElementById("page-size").value;
+        document.getElementById("tb-cols").value =
+          document.getElementById("cols").value;
+        document.getElementById("tb-gap").value =
+          document.getElementById("card-gap").value;
+        document.getElementById("tb-fw").value =
+          document.getElementById("font-word").value;
+        document.getElementById("tb-radius").value = currentRadius;
+        document.getElementById("tb-radius-v").textContent =
+          currentRadius + "px";
+
+        document.getElementById("loading").classList.remove("active");
+        document.getElementById("setup").style.display = "none";
+        document.getElementById("toolbar").classList.add("visible");
+        document.getElementById("preview-area").classList.add("visible");
+        document.getElementById("count-badge").textContent =
+          allCards.length + " cards";
+        applyLayout();
+      }
+
+      // ── RENDER ─────────────────────────────────────────────────
+      function applyLayout() {
+        const orient = document.getElementById("tb-orient").value;
+        const pageSize = document.getElementById("tb-size").value;
+        const cols = parseInt(document.getElementById("tb-cols").value);
+        const gap = parseInt(document.getElementById("tb-gap").value);
+        const fw = parseInt(document.getElementById("tb-fw").value);
+
+        document.getElementById("tb-gap-v").textContent = gap + "px";
+        document.getElementById("tb-fw-v").textContent = fw + "px";
+
+        document.documentElement.style.setProperty("--card-gap", gap + "px");
+        document.documentElement.style.setProperty(
+          "--font-size-word",
+          fw + "px",
+        );
+        document.documentElement.style.setProperty("--cols", cols);
+
+        const showNums = document.getElementById("show-numbers").checked;
+        const showTrans = document.getElementById("show-trans").checked;
+        const showArt = document.getElementById("show-article").checked;
+
+        const pageW = pageSize === "a3" ? 1123 : 794;
+        const pagePad = pageSize === "a3" ? 88 : 64;
+        const cardW = Math.floor((pageW - pagePad - gap * (cols - 1)) / cols);
+        const RATIO = 290 / 200;
+        const cardH =
+          orient === "portrait"
+            ? Math.round(cardW * RATIO)
+            : Math.round(cardW / RATIO);
+        const pageH = pageSize === "a3" ? 1587 : 1123;
+        const rowsPerPage = Math.max(
+          1,
+          Math.floor((pageH - pagePad + gap) / (cardH + gap)),
+        );
+        const perPage = cols * rowsPerPage;
+
+        const area = document.getElementById("preview-area");
+        area.innerHTML = "";
+
+        for (let p = 0; p < allCards.length; p += perPage) {
+          const slice = allCards.slice(p, p + perPage);
+          const page = document.createElement("div");
+          page.className = "page page-" + pageSize;
+          const grid = document.createElement("div");
+          grid.className = "cards-grid";
+          grid.style.gridTemplateColumns = `repeat(${cols}, ${cardW}px)`;
+          grid.style.gap = gap + "px";
+
+          slice.forEach((card) => {
+            const fc = document.createElement("div");
+            fc.className = "flashcard" + (!card.img ? " no-img-card" : "");
+            fc.style.width = cardW + "px";
+            fc.style.height = cardH + "px";
+            fc.style.borderRadius = currentRadius + "px";
+
+            if (showNums) {
+              const n = document.createElement("div");
+              n.className = "fc-num";
+              n.textContent = "#" + card.num;
+              fc.appendChild(n);
+            }
+            if (card.img) {
+              const img = document.createElement("img");
+              img.className = "fc-img";
+              img.src = card.img;
+              img.alt = card.word;
+              img.onerror = () => {
+                img.remove();
+                const e = document.createElement("div");
+                e.className = "fc-img-err";
+                e.textContent = "🖼";
+                fc.insertBefore(e, fc.firstChild);
+                fc.classList.add("no-img-card");
+              };
+              fc.appendChild(img);
+            }
+            const label = document.createElement("div");
+            label.className = "fc-label";
+            if (showArt && card.article) {
+              const a = document.createElement("div");
+              a.className = "fc-article";
+              a.textContent = card.article;
+              label.appendChild(a);
+            }
+            const w = document.createElement("div");
+            w.className = "fc-word";
+            w.textContent = card.word;
+            label.appendChild(w);
+            if (showTrans && card.trans) {
+              const t = document.createElement("div");
+              t.className = "fc-trans";
+              t.textContent = card.trans;
+              label.appendChild(t);
+            }
+            fc.appendChild(label);
+            grid.appendChild(fc);
+          });
+
+          page.appendChild(grid);
+          area.appendChild(page);
+        }
+      }
+
+      ["show-numbers", "show-trans", "show-article"].forEach((id) => {
+        document.getElementById(id).addEventListener("change", () => {
+          if (allCards.length) applyLayout();
+        });
+      });
+
+      function backToSetup() {
+        document.getElementById("toolbar").classList.remove("visible");
+        document.getElementById("preview-area").classList.remove("visible");
+        document.getElementById("preview-area").innerHTML = "";
+        document.getElementById("setup").style.display = "flex";
+        allCards = [];
+      }
+    </script>
+  </body>
+</html>
