@@ -154,6 +154,9 @@
         width: 40px;
         text-align: right;
       }
+      .range-wrap.hidden {
+        display: none;
+      }
 
       .section-title {
         font-size: 11px;
@@ -429,11 +432,25 @@
         border: none;
         accent-color: var(--gold);
       }
+      .tg input[type="color"] {
+        width: 30px;
+        height: 22px;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 5px;
+        background: transparent;
+      }
       .tg .tv {
         color: var(--gold);
         font-size: 11px;
         font-weight: 600;
         width: 32px;
+      }
+      .tg.hidden {
+        display: none;
+      }
+      .hidden {
+        display: none !important;
       }
       #count-badge {
         background: var(--terracotta);
@@ -442,6 +459,102 @@
         font-weight: 600;
         padding: 3px 9px;
         border-radius: 20px;
+      }
+
+      /* IMAGE DRAWER */
+      #layout-drawer,
+      #image-drawer {
+        display: none;
+        position: fixed;
+        top: 122px;
+        width: 315px;
+        max-height: calc(100vh - 136px);
+        overflow: auto;
+        background: #fff;
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        box-shadow: 0 10px 36px rgba(26, 18, 8, 0.18);
+        padding: 14px;
+        z-index: 95;
+      }
+      #layout-drawer {
+        left: 14px;
+      }
+      #image-drawer {
+        right: 14px;
+      }
+      #layout-drawer.visible,
+      #image-drawer.visible {
+        display: block;
+      }
+      .drawer-title {
+        font-family: "Playfair Display", serif;
+        font-size: 1.05rem;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .drawer-note {
+        font-size: 12px;
+        color: #7e756a;
+        margin-bottom: 12px;
+        line-height: 1.5;
+      }
+      .drawer-section {
+        border-top: 1px solid #e9e0d0;
+        padding-top: 12px;
+        margin-top: 12px;
+      }
+      .drawer-section:first-of-type {
+        border-top: none;
+        margin-top: 0;
+        padding-top: 0;
+      }
+      .drawer-section h4 {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #948a7d;
+        margin-bottom: 8px;
+      }
+      .drawer-row {
+        margin-bottom: 10px;
+      }
+      .drawer-row:last-child {
+        margin-bottom: 0;
+      }
+      .drawer-row label {
+        font-size: 11px;
+        margin-bottom: 4px;
+      }
+      .drawer-row select,
+      .drawer-row input[type="range"] {
+        width: 100%;
+        margin: 0;
+      }
+      .drawer-row input[type="color"] {
+        width: 100%;
+        height: 34px;
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        background: #fff;
+        padding: 2px;
+      }
+      .drawer-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .drawer-inline .range-val {
+        width: 52px;
+      }
+      .drawer-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .drawer-actions .btn {
+        flex: 1;
+        padding: 8px 10px;
+        font-size: 12px;
       }
 
       /* PREVIEW */
@@ -453,6 +566,16 @@
       }
       #preview-area.visible {
         display: block;
+      }
+      #preview-area.visible.with-drawer {
+        padding-right: 350px;
+      }
+      #preview-area.visible.with-layout-drawer {
+        padding-left: 350px;
+      }
+      #preview-area.visible.with-drawers {
+        padding-left: 350px;
+        padding-right: 350px;
       }
       .page {
         background: #fff;
@@ -483,6 +606,29 @@
         break-inside: avoid;
         display: flex;
         align-items: flex-end;
+        cursor: pointer;
+        transition: box-shadow 0.15s ease, transform 0.15s ease;
+      }
+      .flashcard.selected {
+        box-shadow:
+          inset 0 0 0 4px var(--gold),
+          0 0 0 2px rgba(26, 18, 8, 0.65),
+          0 8px 18px rgba(201, 168, 76, 0.45);
+        transform: translateY(-1px);
+      }
+      .flashcard.selected::after {
+        content: "SELECTED";
+        position: absolute;
+        top: 6px;
+        left: 7px;
+        z-index: 4;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #1a1208;
+        background: var(--gold);
+        padding: 2px 6px;
+        border-radius: 999px;
       }
       .flashcard .fc-img {
         position: absolute;
@@ -601,6 +747,8 @@
         }
         header,
         #toolbar,
+        #layout-drawer,
+        #image-drawer,
         #setup,
         #loading {
           display: none !important;
@@ -632,12 +780,39 @@
         .flashcard {
           outline: 1px solid #000 !important;
         }
+        .flashcard.selected {
+          box-shadow: none !important;
+          transform: none !important;
+        }
+        .flashcard.selected::after {
+          content: none !important;
+          display: none !important;
+        }
         .fc-word,
         .fc-article,
         .fc-trans,
         .fc-num {
           color: #111 !important;
           text-shadow: none !important;
+        }
+      }
+      @media (max-width: 1100px) {
+        #layout-drawer,
+        #image-drawer {
+          position: static;
+          width: auto;
+          max-height: none;
+          margin: 0 24px 16px;
+        }
+        #preview-area.visible.with-drawer {
+          padding-right: 24px;
+        }
+        #preview-area.visible.with-layout-drawer,
+        #preview-area.visible.with-drawers {
+          padding-left: 24px;
+        }
+        #preview-area.visible.with-drawers {
+          padding-right: 24px;
         }
       }
     </style>
@@ -789,6 +964,26 @@
                 /><span class="range-val" id="fw-val">22px</span>
               </div>
             </div>
+            <div>
+              <label>Image mode</label
+              ><select id="image-fit" onchange="syncImageModeControls()">
+                <option value="cover">Cover</option>
+                <option value="fill">Fill</option>
+                <option value="crop" selected>Crop</option>
+              </select>
+            </div>
+            <div class="range-wrap hidden" id="crop-zoom-wrap">
+              <label>Crop zoom</label>
+              <div class="range-row">
+                <input
+                  type="range"
+                  id="crop-zoom"
+                  min="40"
+                  max="400"
+                  value="80"
+                /><span class="range-val" id="crop-zoom-val">80%</span>
+              </div>
+            </div>
           </div>
 
           <div class="section-title" style="margin-top: 4px">
@@ -829,6 +1024,22 @@
             </svg>
             Generate Flashcards
           </button>
+          <a
+            href="https://docs.google.com/spreadsheets/d/1I4bcyi9M48o4-3nG7iYhpwdgKAtj-bkUr4HyJ0aLuG8/edit?gid=0#gid=0"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn"
+            style="
+              width: 100%;
+              margin-top: 8px;
+              background: #fff;
+              color: var(--ink);
+              border: 1.5px solid var(--card-border);
+              text-decoration: none;
+            "
+          >
+            Open Google Sheet
+          </a>
           <div id="error-msg"></div>
         </div>
       </div>
@@ -845,63 +1056,6 @@
       <div id="toolbar">
         <div class="tl">Flash<span>Italia</span></div>
         <span id="count-badge">0 cards</span>
-        <div class="tg">
-          <label>Orient</label>
-          <select id="tb-orient" onchange="applyLayout()">
-            <option value="portrait">Portrait</option>
-            <option value="landscape">Landscape</option>
-          </select>
-        </div>
-        <div class="tg">
-          <label>Size</label
-          ><select id="tb-size" onchange="applyLayout()">
-            <option value="a4">A4</option>
-            <option value="a3">A3</option>
-          </select>
-        </div>
-        <div class="tg">
-          <label>Cols</label
-          ><select id="tb-cols" onchange="applyLayout()">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-        </div>
-        <div class="tg">
-          <label>Gap</label
-          ><input
-            type="range"
-            id="tb-gap"
-            min="0"
-            max="32"
-            value="10"
-            oninput="applyLayout()"
-          /><span class="tv" id="tb-gap-v">10px</span>
-        </div>
-        <div class="tg">
-          <label>Font</label
-          ><input
-            type="range"
-            id="tb-fw"
-            min="10"
-            max="36"
-            value="22"
-            oninput="applyLayout()"
-          /><span class="tv" id="tb-fw-v">22px</span>
-        </div>
-        <div class="tg">
-          <label>Corners</label>
-          <input
-            type="range"
-            id="tb-radius"
-            min="0"
-            max="40"
-            value="0"
-            oninput="applyRadiusFromToolbar()"
-          />
-          <span class="tv" id="tb-radius-v">0px</span>
-        </div>
         <button
           class="btn"
           style="
@@ -915,6 +1069,22 @@
         >
           ← Edit
         </button>
+        <a
+          href="https://docs.google.com/spreadsheets/d/1I4bcyi9M48o4-3nG7iYhpwdgKAtj-bkUr4HyJ0aLuG8/edit?gid=0#gid=0"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn"
+          style="
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 7px 12px;
+            font-size: 12px;
+            text-decoration: none;
+          "
+        >
+          Sheet
+        </a>
         <button
           class="btn"
           style="
@@ -943,6 +1113,236 @@
         </button>
       </div>
 
+      <div id="layout-drawer">
+        <div class="drawer-title">Layout Tools</div>
+        <p class="drawer-note">Global settings for all cards.</p>
+
+        <div class="drawer-section">
+          <div class="drawer-row">
+            <label>Orientation</label>
+            <select id="tb-orient" onchange="applyLayout()">
+              <option value="portrait">Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+          </div>
+          <div class="drawer-row">
+            <label>Page size</label>
+            <select id="tb-size" onchange="applyLayout()">
+              <option value="a4">A4</option>
+              <option value="a3">A3</option>
+            </select>
+          </div>
+          <div class="drawer-row">
+            <label>Cards per row</label>
+            <select id="tb-cols" onchange="applyLayout()">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div class="drawer-row">
+            <label>Card gap</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-gap"
+                min="0"
+                max="32"
+                value="10"
+                oninput="applyLayout()"
+              />
+              <span class="range-val" id="tb-gap-v">10px</span>
+            </div>
+          </div>
+          <div class="drawer-row">
+            <label>Word font</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-fw"
+                min="10"
+                max="36"
+                value="22"
+                oninput="applyLayout()"
+              />
+              <span class="range-val" id="tb-fw-v">22px</span>
+            </div>
+          </div>
+          <div class="drawer-row">
+            <label>Corners</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-radius"
+                min="0"
+                max="40"
+                value="0"
+                oninput="applyRadiusFromToolbar()"
+              />
+              <span class="range-val" id="tb-radius-v">0px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="image-drawer">
+        <div class="drawer-title">Image Tools</div>
+        <p class="drawer-note">
+          Click a flashcard to edit that image directly.
+        </p>
+
+        <div class="drawer-section">
+          <h4>Global Default</h4>
+          <div class="drawer-row">
+            <label>Image mode</label>
+            <select id="tb-image-fit" onchange="applyLayout()">
+              <option value="cover">Cover</option>
+              <option value="fill">Fill</option>
+              <option value="crop" selected>Crop</option>
+            </select>
+          </div>
+          <div class="drawer-row hidden" id="tb-crop-zoom-wrap">
+            <label>Crop zoom</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-crop-zoom"
+                min="40"
+                max="400"
+                value="80"
+                oninput="applyLayout()"
+              />
+              <span class="range-val" id="tb-crop-zoom-v">80%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <h4 id="selected-card-label">No card selected</h4>
+          <div class="drawer-row">
+            <label>Card image mode</label>
+            <select
+              id="tb-image-fit-card"
+              onchange="applySelectedCardImageSettings()"
+              disabled
+            >
+              <option value="default" selected>Default</option>
+              <option value="cover">Cover</option>
+              <option value="fill">Fill</option>
+              <option value="crop">Crop</option>
+            </select>
+          </div>
+          <div class="drawer-row hidden" id="tb-crop-zoom-card-wrap">
+            <label>Card crop zoom</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-crop-zoom-card"
+                min="40"
+                max="500"
+                value="80"
+                oninput="applySelectedCardImageSettings()"
+                disabled
+              />
+              <span class="range-val" id="tb-crop-zoom-card-v">80%</span>
+            </div>
+          </div>
+          <div class="drawer-row hidden" id="tb-position-card-wrap">
+            <label>Card position X</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-pos-x-card"
+                min="-120"
+                max="120"
+                value="0"
+                oninput="applySelectedCardImagePosition()"
+                disabled
+              />
+              <span class="range-val" id="tb-pos-x-card-v">0%</span>
+            </div>
+            <label style="margin-top: 6px">Card position Y</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-pos-y-card"
+                min="-120"
+                max="120"
+                value="0"
+                oninput="applySelectedCardImagePosition()"
+                disabled
+              />
+              <span class="range-val" id="tb-pos-y-card-v">0%</span>
+            </div>
+          </div>
+          <div class="drawer-row">
+            <label>Card font size</label>
+            <div class="drawer-inline">
+              <input
+                type="range"
+                id="tb-font-card"
+                min="10"
+                max="48"
+                value="22"
+                oninput="applySelectedCardFontSize()"
+                disabled
+              />
+              <span class="range-val" id="tb-font-card-v">22px</span>
+            </div>
+          </div>
+          <div class="drawer-row">
+            <label>Card background</label>
+            <input
+              type="color"
+              id="tb-bg-color-card"
+              value="#ffffff"
+              onchange="applySelectedCardBackground()"
+              disabled
+            />
+          </div>
+          <div class="drawer-actions">
+            <button
+              class="btn"
+              style="
+                background: rgba(26, 18, 8, 0.08);
+                color: var(--ink);
+                border: 1px solid rgba(26, 18, 8, 0.14);
+              "
+              onclick="clearCardSelection()"
+            >
+              Clear
+            </button>
+            <button
+              class="btn"
+              id="tb-font-reset-card"
+              style="
+                background: rgba(26, 18, 8, 0.08);
+                color: var(--ink);
+                border: 1px solid rgba(26, 18, 8, 0.14);
+              "
+              onclick="resetSelectedCardFont()"
+              disabled
+            >
+              Reset font
+            </button>
+            <button
+              class="btn"
+              id="tb-image-reset-card"
+              style="
+                background: rgba(26, 18, 8, 0.08);
+                color: var(--ink);
+                border: 1px solid rgba(26, 18, 8, 0.14);
+              "
+              onclick="resetSelectedCardImage()"
+              disabled
+            >
+              Reset image
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div id="preview-area"></div>
     </div>
 
@@ -951,6 +1351,28 @@
         "https://script.google.com/macros/s/AKfycbxkzUS5RyNvVwCg5pUskNQBOCuN5a28nQFhwiW_Ob7QXJ_6N2Qj3C2_1qaOrKiuXWSGuA/exec";
       let allCards = [];
       let currentRadius = 0;
+      let selectedCardNum = null;
+
+      function getCardByNum(num) {
+        return allCards.find((c) => c.num === num) || null;
+      }
+
+      function getDefaultImageSettings() {
+        return {
+          mode: document.getElementById("tb-image-fit").value,
+          zoom: parseInt(document.getElementById("tb-crop-zoom").value),
+        };
+      }
+
+      function getEffectiveImageSettings(card) {
+        const defaults = getDefaultImageSettings();
+        return {
+          mode: card.imageMode || defaults.mode,
+          zoom: card.imageZoom || defaults.zoom,
+          offsetX: card.imageOffsetX || 0,
+          offsetY: card.imageOffsetY || 0,
+        };
+      }
 
       // Range labels
       function bindRange(id, valId) {
@@ -960,9 +1382,200 @@
         el.addEventListener("input", upd);
         upd();
       }
+      function bindPercentRange(id, valId) {
+        const el = document.getElementById(id),
+          vl = document.getElementById(valId);
+        const upd = () => (vl.textContent = el.value + "%");
+        el.addEventListener("input", upd);
+        upd();
+      }
       bindRange("card-gap", "gap-val");
       bindRange("font-word", "fw-val");
       bindRange("radius-custom-val", "radius-custom-display");
+      bindPercentRange("crop-zoom", "crop-zoom-val");
+
+      function syncImageModeControls() {
+        const setupMode = document.getElementById("image-fit").value;
+        document.getElementById("tb-image-fit").value = setupMode;
+
+        const cropVisible = setupMode === "crop";
+        document
+          .getElementById("crop-zoom-wrap")
+          .classList.toggle("hidden", !cropVisible);
+        document
+          .getElementById("tb-crop-zoom-wrap")
+          .classList.toggle("hidden", !cropVisible);
+
+        const setupZoom = document.getElementById("crop-zoom");
+        const tbZoom = document.getElementById("tb-crop-zoom");
+        tbZoom.value = setupZoom.value;
+        document.getElementById("tb-crop-zoom-v").textContent =
+          tbZoom.value + "%";
+        if (allCards.length) applyLayout();
+      }
+
+      function selectCard(num) {
+        selectedCardNum = num;
+        const card = getCardByNum(num);
+        const title = document.getElementById("selected-card-label");
+        const modeSelect = document.getElementById("tb-image-fit-card");
+        const zoomWrap = document.getElementById("tb-crop-zoom-card-wrap");
+        const zoom = document.getElementById("tb-crop-zoom-card");
+        const zoomVal = document.getElementById("tb-crop-zoom-card-v");
+        const posWrap = document.getElementById("tb-position-card-wrap");
+        const posX = document.getElementById("tb-pos-x-card");
+        const posY = document.getElementById("tb-pos-y-card");
+        const posXVal = document.getElementById("tb-pos-x-card-v");
+        const posYVal = document.getElementById("tb-pos-y-card-v");
+        const font = document.getElementById("tb-font-card");
+        const fontVal = document.getElementById("tb-font-card-v");
+        const fontResetBtn = document.getElementById("tb-font-reset-card");
+        const bgColor = document.getElementById("tb-bg-color-card");
+        const resetBtn = document.getElementById("tb-image-reset-card");
+        const hasImage = !!(card && card.img);
+
+        if (!card) {
+          selectedCardNum = null;
+          title.textContent = "No card selected";
+          modeSelect.value = "default";
+          modeSelect.disabled = true;
+          zoom.disabled = true;
+          posX.disabled = true;
+          posY.disabled = true;
+          posX.value = "0";
+          posY.value = "0";
+          posXVal.textContent = "0%";
+          posYVal.textContent = "0%";
+          posWrap.classList.add("hidden");
+          font.disabled = true;
+          font.value = document.getElementById("tb-fw").value;
+          fontVal.textContent = font.value + "px";
+          fontResetBtn.disabled = true;
+          bgColor.disabled = true;
+          bgColor.value = "#ffffff";
+          resetBtn.disabled = true;
+          zoomWrap.classList.add("hidden");
+          return;
+        }
+
+        title.textContent = `Card #${card.num}: ${card.word}`;
+        font.disabled = false;
+        font.value = card.fontSize || parseInt(document.getElementById("tb-fw").value);
+        fontVal.textContent = font.value + "px";
+        fontResetBtn.disabled = false;
+        modeSelect.disabled = !hasImage;
+        zoom.disabled = !hasImage;
+        posX.disabled = !hasImage;
+        posY.disabled = !hasImage;
+        bgColor.disabled = !hasImage;
+        resetBtn.disabled = !hasImage;
+        if (!hasImage) {
+          modeSelect.value = "default";
+          bgColor.value = "#ffffff";
+          posX.value = "0";
+          posY.value = "0";
+          posXVal.textContent = "0%";
+          posYVal.textContent = "0%";
+          zoomWrap.classList.add("hidden");
+          posWrap.classList.add("hidden");
+          return;
+        }
+
+        modeSelect.value = card.imageMode || "default";
+        const effective = getEffectiveImageSettings(card);
+        zoom.value = card.imageZoom || effective.zoom;
+        zoomVal.textContent = zoom.value + "%";
+        posX.value = card.imageOffsetX || 0;
+        posY.value = card.imageOffsetY || 0;
+        posXVal.textContent = posX.value + "%";
+        posYVal.textContent = posY.value + "%";
+        bgColor.value = card.imageBg || "#ffffff";
+        const modeForZoom =
+          modeSelect.value === "default" ? effective.mode : modeSelect.value;
+        zoomWrap.classList.toggle("hidden", modeForZoom !== "crop");
+        posWrap.classList.toggle("hidden", modeForZoom !== "crop");
+      }
+
+      function clearCardSelection() {
+        selectedCardNum = null;
+        selectCard(null);
+        if (allCards.length) applyLayout();
+      }
+
+      function applySelectedCardImageSettings() {
+        if (!selectedCardNum) return;
+        const card = getCardByNum(selectedCardNum);
+        if (!card || !card.img) return;
+
+        const mode = document.getElementById("tb-image-fit-card").value;
+        const zoom = parseInt(document.getElementById("tb-crop-zoom-card").value);
+
+        card.imageMode = mode === "default" ? null : mode;
+        card.imageZoom = zoom;
+
+        const effectiveMode =
+          mode === "default" ? getEffectiveImageSettings(card).mode : mode;
+        document
+          .getElementById("tb-crop-zoom-card-wrap")
+          .classList.toggle("hidden", effectiveMode !== "crop");
+        document
+          .getElementById("tb-position-card-wrap")
+          .classList.toggle("hidden", effectiveMode !== "crop");
+        if (allCards.length) applyLayout();
+      }
+
+      function applySelectedCardImagePosition() {
+        if (!selectedCardNum) return;
+        const card = getCardByNum(selectedCardNum);
+        if (!card || !card.img) return;
+        const x = parseInt(document.getElementById("tb-pos-x-card").value);
+        const y = parseInt(document.getElementById("tb-pos-y-card").value);
+        card.imageOffsetX = x;
+        card.imageOffsetY = y;
+        document.getElementById("tb-pos-x-card-v").textContent = x + "%";
+        document.getElementById("tb-pos-y-card-v").textContent = y + "%";
+        if (allCards.length) applyLayout();
+      }
+
+      function applySelectedCardBackground() {
+        if (!selectedCardNum) return;
+        const card = getCardByNum(selectedCardNum);
+        if (!card || !card.img) return;
+        card.imageBg = document.getElementById("tb-bg-color-card").value;
+        if (allCards.length) applyLayout();
+      }
+
+      function applySelectedCardFontSize() {
+        if (!selectedCardNum) return;
+        const card = getCardByNum(selectedCardNum);
+        if (!card) return;
+        const size = parseInt(document.getElementById("tb-font-card").value);
+        card.fontSize = size;
+        document.getElementById("tb-font-card-v").textContent = size + "px";
+        if (allCards.length) applyLayout();
+      }
+
+      function resetSelectedCardImage() {
+        if (!selectedCardNum) return;
+        const card = getCardByNum(selectedCardNum);
+        if (!card) return;
+        card.imageMode = null;
+        card.imageZoom = null;
+        card.imageOffsetX = null;
+        card.imageOffsetY = null;
+        card.imageBg = null;
+        selectCard(selectedCardNum);
+        if (allCards.length) applyLayout();
+      }
+
+      function resetSelectedCardFont() {
+        if (!selectedCardNum) return;
+        const card = getCardByNum(selectedCardNum);
+        if (!card) return;
+        card.fontSize = null;
+        selectCard(selectedCardNum);
+        if (allCards.length) applyLayout();
+      }
 
       // Orientation
       function orientChanged() {
@@ -1073,6 +1686,12 @@
               article: artKey ? String(row[artKey] ?? "").trim() : "",
               trans: trKey ? String(row[trKey] ?? "").trim() : "",
               img: imgKey ? String(row[imgKey] ?? "").trim() : "",
+              fontSize: null,
+              imageMode: null,
+              imageZoom: null,
+              imageOffsetX: null,
+              imageOffsetY: null,
+              imageBg: null,
             });
           });
 
@@ -1097,14 +1716,25 @@
           document.getElementById("card-gap").value;
         document.getElementById("tb-fw").value =
           document.getElementById("font-word").value;
+        document.getElementById("tb-image-fit").value =
+          document.getElementById("image-fit").value;
+        document.getElementById("tb-crop-zoom").value =
+          document.getElementById("crop-zoom").value;
+        document.getElementById("tb-crop-zoom-v").textContent =
+          document.getElementById("tb-crop-zoom").value + "%";
         document.getElementById("tb-radius").value = currentRadius;
         document.getElementById("tb-radius-v").textContent =
           currentRadius + "px";
+        syncImageModeControls();
+        selectCard(selectedCardNum);
 
         document.getElementById("loading").classList.remove("active");
         document.getElementById("setup").style.display = "none";
         document.getElementById("toolbar").classList.add("visible");
+        document.getElementById("layout-drawer").classList.add("visible");
+        document.getElementById("image-drawer").classList.add("visible");
         document.getElementById("preview-area").classList.add("visible");
+        document.getElementById("preview-area").classList.add("with-drawers");
         document.getElementById("count-badge").textContent =
           allCards.length + " cards";
         applyLayout();
@@ -1117,9 +1747,28 @@
         const cols = parseInt(document.getElementById("tb-cols").value);
         const gap = parseInt(document.getElementById("tb-gap").value);
         const fw = parseInt(document.getElementById("tb-fw").value);
+        const imageMode = document.getElementById("tb-image-fit").value;
+        const cropZoom =
+          parseInt(document.getElementById("tb-crop-zoom").value) / 100;
 
         document.getElementById("tb-gap-v").textContent = gap + "px";
         document.getElementById("tb-fw-v").textContent = fw + "px";
+        document.getElementById("tb-crop-zoom-v").textContent =
+          Math.round(cropZoom * 100) + "%";
+        document
+          .getElementById("tb-crop-zoom-wrap")
+          .classList.toggle("hidden", imageMode !== "crop");
+        document
+          .getElementById("crop-zoom-wrap")
+          .classList.toggle("hidden", imageMode !== "crop");
+        document.getElementById("image-fit").value = imageMode;
+        document.getElementById("crop-zoom").value =
+          document.getElementById("tb-crop-zoom").value;
+        document.getElementById("crop-zoom-val").textContent =
+          document.getElementById("crop-zoom").value + "%";
+        if (selectedCardNum !== null) {
+          selectCard(selectedCardNum);
+        }
 
         document.documentElement.style.setProperty("--card-gap", gap + "px");
         document.documentElement.style.setProperty(
@@ -1165,6 +1814,14 @@
             fc.style.width = cardW + "px";
             fc.style.height = cardH + "px";
             fc.style.borderRadius = currentRadius + "px";
+            if (card.img) {
+              fc.style.background = card.imageBg || "#ffffff";
+            }
+            if (selectedCardNum === card.num) fc.classList.add("selected");
+            fc.addEventListener("click", () => {
+              selectCard(card.num);
+              applyLayout();
+            });
 
             if (showNums) {
               const n = document.createElement("div");
@@ -1177,6 +1834,68 @@
               img.className = "fc-img";
               img.src = card.img;
               img.alt = card.word;
+              const effective = getEffectiveImageSettings(card);
+              const mode = effective.mode;
+              const zoom = effective.zoom / 100;
+              const offsetX = effective.offsetX;
+              const offsetY = effective.offsetY;
+              img.style.objectFit = mode === "crop" ? "contain" : mode;
+              img.style.transform =
+                mode === "crop"
+                  ? `translate(${offsetX}%, ${offsetY}%) scale(${zoom})`
+                  : "none";
+              img.style.transformOrigin = "center";
+              if (selectedCardNum === card.num && mode === "crop") {
+                img.style.cursor = "grab";
+                img.addEventListener("click", (ev) => ev.stopPropagation());
+                img.addEventListener("pointerdown", (ev) => {
+                  if (ev.button !== 0) return;
+                  ev.preventDefault();
+                  ev.stopPropagation();
+                  const startX = ev.clientX;
+                  const startY = ev.clientY;
+                  const baseX = card.imageOffsetX || 0;
+                  const baseY = card.imageOffsetY || 0;
+                  img.style.cursor = "grabbing";
+
+                  const onMove = (mv) => {
+                    const dx = mv.clientX - startX;
+                    const dy = mv.clientY - startY;
+                    const nx = Math.max(
+                      -120,
+                      Math.min(120, baseX + (dx / cardW) * 100),
+                    );
+                    const ny = Math.max(
+                      -120,
+                      Math.min(120, baseY + (dy / cardH) * 100),
+                    );
+                    card.imageOffsetX = Math.round(nx);
+                    card.imageOffsetY = Math.round(ny);
+                    img.style.transform = `translate(${card.imageOffsetX}%, ${card.imageOffsetY}%) scale(${zoom})`;
+                    if (selectedCardNum === card.num) {
+                      document.getElementById("tb-pos-x-card").value =
+                        card.imageOffsetX;
+                      document.getElementById("tb-pos-y-card").value =
+                        card.imageOffsetY;
+                      document.getElementById("tb-pos-x-card-v").textContent =
+                        card.imageOffsetX + "%";
+                      document.getElementById("tb-pos-y-card-v").textContent =
+                        card.imageOffsetY + "%";
+                    }
+                  };
+
+                  const onUp = () => {
+                    img.style.cursor = "grab";
+                    window.removeEventListener("pointermove", onMove);
+                    window.removeEventListener("pointerup", onUp);
+                    window.removeEventListener("pointercancel", onUp);
+                  };
+
+                  window.addEventListener("pointermove", onMove);
+                  window.addEventListener("pointerup", onUp);
+                  window.addEventListener("pointercancel", onUp);
+                });
+              }
               img.onerror = () => {
                 img.remove();
                 const e = document.createElement("div");
@@ -1189,19 +1908,23 @@
             }
             const label = document.createElement("div");
             label.className = "fc-label";
+            const cardFontSize = card.fontSize || fw;
             if (showArt && card.article) {
               const a = document.createElement("div");
               a.className = "fc-article";
+              a.style.fontSize = Math.round(cardFontSize * 0.65) + "px";
               a.textContent = card.article;
               label.appendChild(a);
             }
             const w = document.createElement("div");
             w.className = "fc-word";
+            w.style.fontSize = cardFontSize + "px";
             w.textContent = card.word;
             label.appendChild(w);
             if (showTrans && card.trans) {
               const t = document.createElement("div");
               t.className = "fc-trans";
+              t.style.fontSize = Math.round(cardFontSize * 0.6) + "px";
               t.textContent = card.trans;
               label.appendChild(t);
             }
@@ -1219,13 +1942,38 @@
           if (allCards.length) applyLayout();
         });
       });
+      ["image-fit", "crop-zoom"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", () => {
+          if (id === "image-fit") {
+            syncImageModeControls();
+            return;
+          }
+          document.getElementById("tb-crop-zoom").value =
+            document.getElementById("crop-zoom").value;
+          document.getElementById("tb-crop-zoom-v").textContent =
+            document.getElementById("crop-zoom").value + "%";
+          if (allCards.length) applyLayout();
+        });
+      });
+      bindPercentRange("tb-crop-zoom", "tb-crop-zoom-v");
+      bindPercentRange("tb-crop-zoom-card", "tb-crop-zoom-card-v");
+      syncImageModeControls();
+      selectCard(null);
 
       function backToSetup() {
         document.getElementById("toolbar").classList.remove("visible");
+        document.getElementById("layout-drawer").classList.remove("visible");
+        document.getElementById("image-drawer").classList.remove("visible");
         document.getElementById("preview-area").classList.remove("visible");
+        document.getElementById("preview-area").classList.remove("with-drawers");
+        document
+          .getElementById("preview-area")
+          .classList.remove("with-layout-drawer");
+        document.getElementById("preview-area").classList.remove("with-drawer");
         document.getElementById("preview-area").innerHTML = "";
         document.getElementById("setup").style.display = "flex";
         allCards = [];
+        selectedCardNum = null;
       }
     </script>
   </body>
